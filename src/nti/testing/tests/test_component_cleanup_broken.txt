@@ -1,9 +1,14 @@
 When zope.component.hooks is loaded, it installs a zope.testing
-cleanup function. However, this cleanup function isn't adequote and
-leaves stale data around, leading zope.interface adapters to
-improperly adapt things (a particular problem when running test suites
-that load different adapter configurations) This problem goes away if zope.site.site is
-imported and installs its cleanup hooks.
+cleanup function. However, prior to version 4.2.0, this cleanup
+function isn't adequote and leaves stale data around, leading
+zope.interface adapters to improperly adapt things (a particular
+problem when running test suites that load different adapter
+configurations) This problem goes away if zope.site.site is imported
+and installs its cleanup hooks.
+
+Although the bug has been fixed, it was an interesting problem, and
+this file remains to provide an example of working with ZCA internals.
+Tests that are now fixed are marked as skipped.
 
 Demonstration
 =============
@@ -79,12 +84,12 @@ alright::
 
 But if we ask the (hooked) global API, we have a problem::
 
-	>>> component.queryAdapter( O(), II )
+	>>> component.queryAdapter( O(), II )  # doctest: +SKIP
 	<A2>
 
-And we haze the same problem if we ask zope.interface::
+And we have the same problem if we ask zope.interface::
 
-	>>> II( O() )
+	>>> II( O() )  # doctest: +SKIP
 	<A2>
 
 You can see that we get back the A2 registration, which should no

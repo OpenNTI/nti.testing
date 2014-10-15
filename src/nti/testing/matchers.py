@@ -238,7 +238,8 @@ import pprint
 _orig_append_description_of = BaseDescription.append_description_of
 def _append_description_of_map(self, value):
 	if not hasattr( value, 'describe_to' ):
-		if (isinstance( value, collections.Mapping ) or isinstance(value,collections.Sequence)):
+		if (isinstance( value, collections.Mapping )
+			or isinstance(value,collections.Sequence)):
 			sio = StringIO()
 			pprint.pprint( value, sio )
 			self.append( sio.getvalue() )

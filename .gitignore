@@ -1,6 +1,7 @@
 *~
 *.pyc
 *.pyo
+*.py#
 .DS_Store
 .nose
 *.egg-info
