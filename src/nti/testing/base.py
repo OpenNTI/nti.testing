@@ -63,6 +63,44 @@ def sharedCleanup():
 	for func, args, kw in _shared_cleanups:
 		func(*args, **kw)
 
+class _SharedTestBaseMetaclass(type):
+	"""
+	A metaclass that converts the nose-specific use of setUpClass
+	and tearDownClass into a layer that also works with zope.testrunner
+	(which is generally better than nose2).
+
+	This works because nose2 picks one or the other, and it chooses layers
+	over setUp/tearDownClass---only one of them is called. (If that changes,
+	it's easy to workaround.)
+	"""
+
+	def __new__(mcs, name, bases, cdict):
+		the_type = type.__new__(mcs, name, bases, cdict)
+		# TODO: Based on certain features of the the_type
+		# like set_up_packages and features, we can probably
+		# cache and share layers, which will help speed up
+		# test runs
+		class layer(object):
+			__name__ = name
+			__mro__ = __bases__ = (object,)
+
+			@classmethod
+			def setUp(cls):
+				the_type.setUpClass()
+			@classmethod
+			def tearDown(cls):
+				the_type.tearDownClass()
+			@classmethod
+			def testSetUp(cls):
+				pass
+			@classmethod
+			def testTearDown(cls):
+				pass
+		the_type.layer = layer
+		layer.__name__ = name
+		return the_type
+
+
 class AbstractSharedTestBase(unittest.TestCase):
 	"""
 	Base class for testing that can share most global data (e.g., ZCML
@@ -70,8 +108,8 @@ class AbstractSharedTestBase(unittest.TestCase):
 	the global data (e.g., ZCA component registry) is otherwise
 	cleaned up or not mutated between tests.
 
-	.. note:: This will be replaced with a nose2 layer.
 	"""
+	__metaclass__ = _SharedTestBaseMetaclass
 
 	HANDLE_GC = False
 
@@ -91,6 +129,7 @@ class AbstractSharedTestBase(unittest.TestCase):
 		default for speed; set it to true if your TestCase will be
 		creating new (possibly synthetic) sites/site managers.
 		"""
+		print("Setting up layer")
 		zope.testing.cleanup.cleanUp()
 		if cls.HANDLE_GC:
 			cls.__isenabled = gc.isenabled()
