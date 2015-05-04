@@ -40,7 +40,7 @@ setup(
 		'zope.configuration',
 		'zope.dottedname',
 		'zope.filerepresentation',
-		'zope.interface',
+		'zope.interface >= 4.1.2',
 		'zope.schema',
 		'zope.site',
 		'zope.testing',
