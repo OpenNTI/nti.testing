@@ -27,7 +27,11 @@ setup(
 	packages=find_packages('src'),
 	package_dir={'': 'src'},
 	namespace_packages=['nti'],
+	setup_requires=[
+		'setuptools-git',
+	],
 	install_requires=[
+		'zope.interface >= 4.1.2', # Listing first to work around a Travis CI issue
 		'Acquisition',
 		'fudge',
 		'nose',
@@ -40,11 +44,11 @@ setup(
 		'zope.configuration',
 		'zope.dottedname',
 		'zope.filerepresentation',
-		'zope.interface >= 4.1.2',
 		'zope.schema',
 		'zope.site',
 		'zope.testing',
-		'zope.testrunner'
+		'zope.testrunner',
 	],
-	entry_points=entry_points
+	entry_points=entry_points,
+	include_package_data=True
 )
