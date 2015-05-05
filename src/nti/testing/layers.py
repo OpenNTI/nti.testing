@@ -254,3 +254,5 @@ def find_test():
 		else:
 			if isinstance(frame.f_locals.get('self'), unittest.TestCase):
 				return frame.f_locals['self']
+			if isinstance(frame.f_locals.get('test'), unittest.TestCase):
+				return frame.f_locals['test']
