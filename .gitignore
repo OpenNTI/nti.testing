@@ -1,4 +1,5 @@
 .eggs
 .project
 .pydevproject
+src/nti/*.pyc
 src/nti.testing.egg-info
