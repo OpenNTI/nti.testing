@@ -100,6 +100,8 @@ class _SharedTestBaseMetaclass(type):
 		layer.__name__ = name
 		return the_type
 
+import platform
+_is_pypy = platform.python_implementation() == 'PyPy'
 
 class AbstractSharedTestBase(unittest.TestCase):
 	"""
@@ -129,11 +131,12 @@ class AbstractSharedTestBase(unittest.TestCase):
 		default for speed; set it to true if your TestCase will be
 		creating new (possibly synthetic) sites/site managers.
 		"""
-		print("Setting up layer")
+
 		zope.testing.cleanup.cleanUp()
 		if cls.HANDLE_GC:
 			cls.__isenabled = gc.isenabled()
-			gc.disable()
+			if not _is_pypy:
+				gc.disable() # PyPy GC is fast
 
 	@classmethod
 	def tearDownClass(cls):
@@ -141,12 +144,11 @@ class AbstractSharedTestBase(unittest.TestCase):
 		if cls.HANDLE_GC:
 			if cls.__isenabled:
 				gc.enable()
-			try:
-				gc.collect( 0 ) # collect one generation now to clean up weak refs
-				assert_that( gc.garbage, is_( [] ) )
-			except TypeError:
-				# pypy gc.collect takes no args
-				gc.collect()
+
+			gc.collect(0) # collect now to clean up weak refs
+			if _is_pypy:
+				gc.collect(0) # PyPy sometimes needs two cycles to get them all
+			assert_that( gc.garbage, is_( [] ) )
 
 	def setUp(self):
 		sharedCleanup()
