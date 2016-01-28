@@ -208,10 +208,16 @@ class ConfiguringLayerMixin(object):
 
 	@classmethod
 	def setUpPackages(cls):
+		logger.info( 'Setting up packages %s for layer %s', cls.set_up_packages, cls )
 		gc.collect()
-		cls.configuration_context = cls.configure_packages(set_up_packages=cls.set_up_packages,
-														   features=cls.features,
-														   context=cls.configuration_context)
+		try:
+			cls.configuration_context = cls.configure_packages(set_up_packages=cls.set_up_packages,
+															features=cls.features,
+															context=cls.configuration_context)
+		except:
+			# Cleanup any partially loaded configs so that other layers are not affected.
+			zope.testing.cleanup.cleanUp()
+			raise
 		component.provideHandler( eventtesting.events.append, (None,) )
 		gc.collect()
 
@@ -226,6 +232,7 @@ class ConfiguringLayerMixin(object):
 	@classmethod
 	def tearDownPackages(cls):
 		# This is a duplicate of zope.component.globalregistry
+		logger.info( 'Tearing down packages %s for layer %s', cls.set_up_packages, cls )
 		gc.collect()
 		component.getGlobalSiteManager().__init__('base')
 		gc.collect()
