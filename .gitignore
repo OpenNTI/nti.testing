@@ -4,3 +4,4 @@
 src/nti/*.pyc
 src/nti/testing/*.pyc
 src/nti.testing.egg-info
+/.settings/
