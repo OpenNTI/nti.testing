@@ -9,7 +9,7 @@ script:
 # Make sure they both work. Get coverage info from nose2
   - zope-testrunner --test-path=src  --auto-color --auto-progress
   - nose2 --help
-  - nose2 -v --with-coverage
+  - python -m nose2 -v --with-coverage
 after_success:
   - coveralls
 notifications:
