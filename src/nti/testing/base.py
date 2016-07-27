@@ -6,13 +6,11 @@ Base test classes and functions for setting up ZCA.
 $Id: base.py 42673 2014-07-05 14:43:39Z jason.madden $
 """
 
-from __future__ import print_function, unicode_literals, absolute_import
-__docformat__ = "restructuredtext en"
+from __future__ import print_function, unicode_literals, absolute_import, division
+
+
 
 logger = __import__('logging').getLogger(__name__)
-
-# disable: accessing protected members, too many methods
-#pylint: disable=W0212,R0904
 
 import os
 import sys
@@ -22,6 +20,9 @@ import zope.testing.cleanup
 
 import transaction
 import gc
+
+import six
+from six import with_metaclass
 
 class AbstractTestBase(zope.testing.cleanup.CleanUp, unittest.TestCase):
     """
@@ -103,7 +104,7 @@ class _SharedTestBaseMetaclass(type):
 import platform
 _is_pypy = platform.python_implementation() == 'PyPy'
 
-class AbstractSharedTestBase(unittest.TestCase):
+class AbstractSharedTestBase(with_metaclass(_SharedTestBaseMetaclass, unittest.TestCase)):
     """
     Base class for testing that can share most global data (e.g., ZCML
     configuration) between unit tests. This is far more efficient, if
@@ -111,7 +112,6 @@ class AbstractSharedTestBase(unittest.TestCase):
     cleaned up or not mutated between tests.
 
     """
-    __metaclass__ = _SharedTestBaseMetaclass
 
     HANDLE_GC = False
 
@@ -198,7 +198,7 @@ def _configure(self=None, set_up_packages=(), features=('devmode','testmode'), c
                 filename = 'configure.zcml'
                 package = i
 
-            if isinstance( package, basestring ):
+            if isinstance(package, six.string_types):
                 package = dottedname.resolve( package )
 
             try:

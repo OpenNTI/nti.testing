@@ -6,16 +6,24 @@ Hamcrest matchers for testing.
 $Id: matchers.py 37276 2014-04-16 13:53:09Z jason.madden $
 """
 
-from __future__ import print_function, unicode_literals, absolute_import
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
-# disable: accessing protected members, too many methods
-#pylint: disable=W0212,R0904
 
 from hamcrest.core.base_matcher import BaseMatcher
 import hamcrest
+from hamcrest import is_not
+
+from hamcrest import has_length
+has_length = has_length # Export
+from hamcrest.library.collection.is_empty import empty
+is_empty = empty # bwc
+
+has_attr = hamcrest.library.has_property
+
 
 # Increase verbosity of deprecations
 
@@ -68,6 +76,7 @@ from zope import interface
 from zope.interface.verify import verifyObject
 from zope.interface.exceptions import Invalid, BrokenImplementation, BrokenMethodImplementation, DoesNotImplement
 from zope.schema import getValidationErrors, ValidationError
+
 class VerifyProvides(BaseMatcher):
 
     def __init__( self, iface ):
@@ -87,18 +96,22 @@ class VerifyProvides(BaseMatcher):
 
     def describe_mismatch( self, item, mismatch_description ):
         x = None
-        mismatch_description.append_text( str(type(item))  )
+        md = mismatch_description
+        md.append_text( str(type(item))  )
         try:
             verifyObject( self.iface, item )
         except BrokenMethodImplementation as x:
-            mismatch_description.append_text( str(x).replace( '\n', '' ) )
+            md.append_text( str(x).replace( '\n', '' ) )
         except BrokenImplementation as x:
-            mismatch_description.append_text( ' failed to provide attribute "').append_text( x.name ).append_text( '"' ).append_text( ' from ' ).append_text( self.iface[x.name].interface.getName() )
+            md.append_text( ' failed to provide attribute "')
+            md.append_text( x.name ).append_text( '"' ).append_text( ' from ' )
+            md.append_text( self.iface[x.name].interface.getName() )
         except DoesNotImplement as x:
-            mismatch_description.append_text( " does not implement the interface; it does implement " ).append_text( str(list(interface.providedBy(item))) )
+            md.append_text( " does not implement the interface; it does implement " )
+            md.append_text( str(list(interface.providedBy(item))) )
         except Invalid as x:
-            #mismatch_description.append_description_of( item ).append_text( ' has no attr ').append_text( self.attr )
-            mismatch_description.append_text( str(x).replace( '\n', '' ) )
+            #md.append_description_of( item ).append_text( ' has no attr ').append_text( self.attr )
+            md.append_text( str(x).replace( '\n', '' ) )
 
 
 def verifiably_provides(*ifaces):
@@ -122,8 +135,8 @@ class VerifyValidSchema(BaseMatcher):
 
     def describe_mismatch( self, item, mismatch_description ):
         x = None
-        mismatch_description.append_text( str(type(item))  )
-
+        md = mismatch_description
+        md.append_text( str(type(item))  )
 
         errors = getValidationErrors( self.iface, item )
 
@@ -131,10 +144,13 @@ class VerifyValidSchema(BaseMatcher):
             try:
                 raise exc
             except ValidationError:
-                mismatch_description.append_text( ' has attribute "').append_text( attr ).append_text( '" with error "' ).append_text( repr(exc) ).append_text( '"\n\t ' )
+                md.append_text( ' has attribute "')
+                md.append_text( attr )
+                md.append_text( '" with error "' )
+                md.append_text( repr(exc) )
+                md.append_text( '"\n\t ' )
             except Invalid as x:
-                #mismatch_description.append_description_of( item ).append_text( ' has no attr ').append_text( self.attr )
-                mismatch_description.append_text( str(x).replace( '\n', '' ) )
+                md.append_text( str(x).replace( '\n', '' ) )
 
 def validly_provides(*ifaces):
     "Matches if the object verifiably and validly provides the given schema (interface)"
@@ -188,7 +204,11 @@ class ValidatedBy(BaseMatcher):
         except Exception as e:
             ex = e
 
-        mismatch_description.append_text( repr( self.field ) ).append_text( ' failed to validate ' ).append_text( repr( item ) ).append_text( ' with ' ).append_text( repr( ex ) )
+        mismatch_description.append_text( repr( self.field ) )
+        mismatch_description.append_text( ' failed to validate ' )
+        mismatch_description.append_text( repr( item ) )
+        mismatch_description.append_text( ' with ' )
+        mismatch_description.append_text( repr( ex ) )
 
 try:
     from Acquisition import aq_inContextOf as _aq_inContextOf
@@ -219,20 +239,16 @@ def aq_inContextOf( parent ):
 def validated_by( field ):
     """ Matches if the data is validated by the given IField """
     return ValidatedBy( field )
-from hamcrest import is_not
+
+
 def not_validated_by( field ):
     """ Matches if the data is NOT validated by the given IField. """
     return is_not( validated_by( field ) )
-from hamcrest import has_length
-has_length = has_length
-from hamcrest.library.collection.is_empty import empty
-is_empty = empty # bwc
 
-has_attr = hamcrest.library.has_property
 
 # Patch hamcrest for better descriptions of maps (json data)
 from hamcrest.core.base_description import BaseDescription
-from cStringIO import StringIO
+from io import StringIO
 import collections
 import pprint
 _orig_append_description_of = BaseDescription.append_description_of

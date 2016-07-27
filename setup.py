@@ -22,8 +22,12 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Software Development :: Testing'
         ],
+    zip_safe=True,
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['nti'],
@@ -34,6 +38,7 @@ setup(
         'nose',
         'persistent',
         'pyhamcrest',
+        'six',
         'setuptools',
         'transaction',
         'zope.annotation',
@@ -47,5 +52,6 @@ setup(
         'zope.testrunner',
     ],
     entry_points=entry_points,
-    include_package_data=True
+    include_package_data=True,
+    test_suite="nti.testing.tests.test_main.test_suite",
 )
