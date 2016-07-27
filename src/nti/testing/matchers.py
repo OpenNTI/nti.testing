@@ -110,8 +110,7 @@ class VerifyProvides(BaseMatcher):
         except DoesNotImplement as x:
             md.append_text( " does not implement the interface; it does implement " )
             md.append_text( str(list(interface.providedBy(item))) )
-        except Invalid as x:
-            #md.append_description_of( item ).append_text( ' has no attr ').append_text( self.attr )
+        except Invalid as x: # pragma: no cover
             md.append_text( str(x).replace( '\n', '' ) )
 
 
@@ -150,7 +149,7 @@ class VerifyValidSchema(BaseMatcher):
                 md.append_text( '" with error "' )
                 md.append_text( repr(exc) )
                 md.append_text( '"\n\t ' )
-            except Invalid as x:
+            except Invalid as x: # pragma: no cover
                 md.append_text( str(x).replace( '\n', '' ) )
 
 def validly_provides(*ifaces):
@@ -213,7 +212,7 @@ class ValidatedBy(BaseMatcher):
 
 try:
     from Acquisition import aq_inContextOf as _aq_inContextOf
-except ImportError:
+except ImportError: # pragma: no cover
     # acquisition not installed
     def _aq_inContextOf( child, parent ):
         return False
