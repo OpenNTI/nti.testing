@@ -27,9 +27,6 @@ setup(
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['nti'],
-    setup_requires=[
-        'setuptools-git',
-    ],
     install_requires=[
         'zope.interface >= 4.1.2', # Listing first to work around a Travis CI issue
         'Acquisition',
