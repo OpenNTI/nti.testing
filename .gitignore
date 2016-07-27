@@ -20,3 +20,4 @@ doc/__pycache__
 doc/relstorage.*.rst
 doc/changelog.rst
 /.settings/
+/.eggs/
