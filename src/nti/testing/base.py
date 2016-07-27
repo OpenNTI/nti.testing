@@ -169,7 +169,7 @@ def _configure(self=None, set_up_packages=(), features=('devmode','testmode'), c
 
     # This is normally created by a slug, but tests may not always
     # load the slug
-    if os.getenv('DATASERVER_DIR_IS_BUILDOUT'):
+    if os.getenv('DATASERVER_DIR_IS_BUILDOUT'): # pragma: no cover
         features.add( 'in-buildout' )
 
 
@@ -211,7 +211,7 @@ def _configure(self=None, set_up_packages=(), features=('devmode','testmode'), c
                     parent_package_name = '.'.join(package.__name__.split('.')[:-2])
                     package = dottedname.resolve( parent_package_name )
                     context = xmlconfig.file( filename, package=package, context=context )
-                else:
+                else: # pragma: no cover
                     raise
 
     return context
@@ -262,7 +262,7 @@ class ConfiguringTestBase(AbstractTestBase):
                 # eventtesting fully configure itself
                 component.provideHandler( eventtesting.events.append, (None,) )
             else:
-                eventtesting.setUp()
+                eventtesting.setUp() # pragma: no cover
 
         self.configuration_context = self.configure_packages( set_up_packages=self.set_up_packages,
                                                               features=self.features,
@@ -337,7 +337,7 @@ class SharedConfiguringTestBase(AbstractSharedTestBase):
             if cls.set_up_packages:
                 component.provideHandler( eventtesting.events.append, (None,) )
             else:
-                eventtesting.setUp()
+                eventtesting.setUp() # pragma: no cover
         cls.configuration_context = cls.configure_packages(set_up_packages=cls.set_up_packages,
                                                            features=cls.features,
                                                            context=cls.configuration_context)
