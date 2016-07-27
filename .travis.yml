@@ -1,13 +1,35 @@
 language: python
 sudo: false
-python: 2.7
-env:
-    - TOX_ENV=py27
-    - TOX_ENV=pypy
-    - TOX_ENV=py34
-install:
-    - pip install tox
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - pypy
 script:
-    - tox -e $TOX_ENV
+# Make sure they both work. Get coverage info from zope-testrunner
+# Note we have to go through weird contortions to get nose2 to work
+# for some reason....and I never could, so disabled for now.
+  - coverage run `which zope-testrunner` --test-path=src  --auto-color --auto-progress
+#  - which nose2
+#  - python -c 'from nose2 import discover; discover()'
+after_success:
+  - coveralls
 notifications:
-    email: dev-regression-tests@nextthought.com
+  email: dev-regression-tests@nextthought.com
+
+install:
+  - pip install -U pip setuptools
+  - pip install -U coveralls coverage
+  - pip install -U "nose2[coverage_plugin]"
+  - pip install -U -e ".[test]"
+
+# cache: pip seems not to work if `install` is replaced (https://github.com/travis-ci/travis-ci/issues/3239)
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.venv
+    - $HOME/.runtimes
+    - $HOME/.wheelhouse
+
+before_cache:
+    - rm -f $HOME/.cache/pip/log/debug.log
