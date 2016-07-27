@@ -8,6 +8,7 @@ entry_points = {
 
 TESTS_REQUIRE = [
     'nose2[coverage_plugin]',
+    'zope.site',
     'zope.testrunner',
 ]
 
@@ -42,21 +43,15 @@ setup(
         'zope.interface >= 4.1.2', # Listing first to work around a Travis CI issue
         'Acquisition',
         'fudge',
-        'nose',
-        'persistent',
         'pyhamcrest',
         'six',
         'setuptools',
         'transaction',
-        'zope.annotation',
         'zope.component',
         'zope.configuration',
         'zope.dottedname',
-        'zope.filerepresentation',
-        'zope.schema',
-        'zope.site',
+        'zope.schema', # schema validation
         'zope.testing',
-        'zope.testrunner',
     ],
     entry_points=entry_points,
     include_package_data=True,
