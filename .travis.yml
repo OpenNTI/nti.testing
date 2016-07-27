@@ -6,10 +6,12 @@ python:
   - 3.5
   - pypy
 script:
-# Make sure they both work. Get coverage info from nose2
-  - zope-testrunner --test-path=src  --auto-color --auto-progress
+# Make sure they both work. Get coverage info from zope-testrunner
+# Note we have to go through weird contortions to get nose2 to work
+# for some reason.
+  - covegare run `which zope-testrunner` --test-path=src  --auto-color --auto-progress
   - which nose2
-  - nose2 -v -C
+  - python -c 'from nose2 import discover; discover()'
 after_success:
   - coveralls
 notifications:
