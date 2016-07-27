@@ -79,12 +79,9 @@ class GCLayerMixin(object):
 
         if cls.__isenabled:
             gc.enable()
-        try:
-            gc.collect( 0 ) # collect one generation now to clean up weak refs
-            assert_that( gc.garbage, is_( [] ) )
-        except TypeError:
-            # pypy gc.collect takes no args
-            gc.collect()
+
+        gc.collect( 0 ) # collect one generation now to clean up weak refs
+        assert_that( gc.garbage, is_( [] ) )
 
 class SharedCleanupLayer(object):
     """
@@ -252,7 +249,7 @@ def find_test():
         try:
             frame = sys._getframe(i)
             i = i + 1
-        except ValueError:
+        except ValueError: # pragma: no cover
             return None
         else:
             if isinstance(frame.f_locals.get('self'), unittest.TestCase):
