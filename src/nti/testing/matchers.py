@@ -12,6 +12,7 @@ __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
+import six
 
 from hamcrest.core.base_matcher import BaseMatcher
 import hamcrest
@@ -248,7 +249,10 @@ def not_validated_by( field ):
 
 # Patch hamcrest for better descriptions of maps (json data)
 from hamcrest.core.base_description import BaseDescription
-from io import StringIO
+if six.PY3:
+    from io import StringIO
+else:
+    from cStringIO import StringIO
 import collections
 import pprint
 _orig_append_description_of = BaseDescription.append_description_of
