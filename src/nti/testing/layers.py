@@ -252,7 +252,7 @@ def find_test():
         try:
             frame = sys._getframe(i)
             i = i + 1
-        except ValueError:
+        except ValueError: # pragma: no cover
             return None
         else:
             if isinstance(frame.f_locals.get('self'), unittest.TestCase):

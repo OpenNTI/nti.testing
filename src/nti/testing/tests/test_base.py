@@ -17,11 +17,8 @@ logger = __import__('logging').getLogger(__name__)
 import unittest
 from hamcrest import assert_that
 from hamcrest import is_
-from hamcrest import has_key
-from hamcrest import has_entry
 
 from nti.testing import base
-from nti.testing import matchers
 from nti.testing.matchers import has_attr
 
 class TestBase(unittest.TestCase):

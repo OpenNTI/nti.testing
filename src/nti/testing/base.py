@@ -165,10 +165,7 @@ from zope.component import eventtesting
 
 def _configure(self=None, set_up_packages=(), features=('devmode','testmode'), context=None, package=None):
 
-    if features is not None:
-        features = set(features)
-    else:
-        features = set()
+    features = set(features) if features is not None else set()
 
     # This is normally created by a slug, but tests may not always
     # load the slug
