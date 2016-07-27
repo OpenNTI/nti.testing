@@ -55,7 +55,7 @@ def addSharedCleanUp(func, args=(), kw=None):
     """Registers a cleanup to happen for every test,
     regardless of whether the test is using shared configuration or not."""
     _shared_cleanups.append( (func, args, kw or {}) )
-    zope.testing.cleanup.addCleanUp( func, args, kw )
+    zope.testing.cleanup.addCleanUp( func, args, kw or {})
 
 def sharedCleanup():
     """
