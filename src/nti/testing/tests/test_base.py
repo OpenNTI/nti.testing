@@ -59,7 +59,7 @@ class TestBase(unittest.TestCase):
                 pass
 
         MyTest.setUpClass()
-        assert_that(gc.isenabled(), is_(False))
+        assert_that(gc.isenabled(), is_(False if not base._is_pypy else True))
         MyTest.tearDownClass()
         assert_that(gc.isenabled(), is_(True))
 
