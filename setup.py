@@ -6,6 +6,11 @@ VERSION = '0.0.0'
 entry_points = {
 }
 
+TESTS_REQUIRE = [
+    'nose2[coverage_plugin]',
+    'zope.testrunner',
+]
+
 setup(
     name = 'nti.testing',
     version = VERSION,
@@ -25,7 +30,9 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Topic :: Software Development :: Testing'
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Software Development :: Testing',
         ],
     zip_safe=True,
     packages=find_packages('src'),
@@ -54,4 +61,7 @@ setup(
     entry_points=entry_points,
     include_package_data=True,
     test_suite="nti.testing.tests.test_main.test_suite",
+    extras_require={
+        'test': TESTS_REQUIRE
+    },
 )
