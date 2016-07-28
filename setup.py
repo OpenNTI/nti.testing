@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import codecs
 
-VERSION = '0.0.0'
+version = '0.0.0'
 
 entry_points = {
 }
@@ -18,7 +18,7 @@ def _read(fname):
 
 setup(
     name = 'nti.testing',
-    version = VERSION,
+    version = version,
     author = 'Jason Madden',
     author_email = 'jason@nextthought.com',
     description = "Support for testing code",
