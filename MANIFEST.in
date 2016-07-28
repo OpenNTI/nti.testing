@@ -1,6 +1,7 @@
 include .coveragerc
 include CHANGES
 include INSTALL
+include README.rst
 include LICENSE
 include TODO
 include nose2.cfg

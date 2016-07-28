@@ -12,15 +12,19 @@ TESTS_REQUIRE = [
     'zope.testrunner',
 ]
 
+def _read(fname):
+    with codecs.open(fname, encoding='utf-8') as f:
+        return f.read()
+
 setup(
     name = 'nti.testing',
     version = VERSION,
     author = 'Jason Madden',
     author_email = 'jason@nextthought.com',
     description = "Support for testing code",
-    long_description = codecs.open('README.rst', encoding='utf-8').read(),
-    license = 'Proprietary',
-    keywords = 'nose testing',
+    long_description = _read('README.rst') + _read('CHANGES'),
+    license = 'Apache',
+    keywords = 'nose2 testing zope3 ZTK hamcrest',
     url = 'https://github.com/NextThought/nti.testing',
     classifiers = [
         'Intended Audience :: Developers',

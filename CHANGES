@@ -1,1 +1,10 @@
 
+Changes
+=======
+
+
+1.0.0 (unreleased)
+------------------
+
+- Add Python 3 support.
+- Initial PyPI release.
