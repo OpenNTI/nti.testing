@@ -21,3 +21,4 @@ doc/relstorage.*.rst
 doc/changelog.rst
 /.settings/
 /.eggs/
+/build/
