@@ -1,5 +1,5 @@
 include .coveragerc
-include CHANGES
+include CHANGES.rst
 include INSTALL
 include README.rst
 include LICENSE
