@@ -6,7 +6,7 @@ Base test classes and functions for setting up ZCA.
 $Id: base.py 42673 2014-07-05 14:43:39Z jason.madden $
 """
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function,  absolute_import, division
 
 
 

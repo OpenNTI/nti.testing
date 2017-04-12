@@ -6,7 +6,7 @@ Hamcrest matchers for testing.
 $Id: matchers.py 37276 2014-04-16 13:53:09Z jason.madden $
 """
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function,  absolute_import, division
 
 __docformat__ = "restructuredtext en"
 

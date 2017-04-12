@@ -6,7 +6,7 @@ Test layer support.
 $Id: layers.py 42910 2014-07-10 18:11:05Z jason.madden $
 """
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function,  absolute_import, division
 
 __docformat__ = "restructuredtext en"
 
