@@ -14,7 +14,8 @@ Changes
 
 - Add support for Python 3.6.
 - Remove ``unicode_literals``.
-
+- Substantially rework ``time_monotonically_increases`` for greater
+  safety. Fixes `issue 5 <https://github.com/NextThought/nti.testing/issues/5>`_.
 
 1.0.0 (2016-07-28)
 ------------------
