@@ -3,8 +3,8 @@ Changes
 =======
 
 
-2.0 (unreleased)
-----------------
+2.0.0 (2017-04-12)
+------------------
 
 - Add support for Python 3.6.
 - Remove ``unicode_literals``.
