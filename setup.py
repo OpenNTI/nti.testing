@@ -22,7 +22,7 @@ setup(
     author = 'Jason Madden',
     author_email = 'jason@nextthought.com',
     description = "Support for testing code",
-    long_description = _read('README.rst') + _read('CHANGES'),
+    long_description = _read('README.rst') + _read('CHANGES.rst'),
     license = 'Apache',
     keywords = 'nose2 testing zope3 ZTK hamcrest',
     url = 'https://github.com/NextThought/nti.testing',
