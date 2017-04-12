@@ -39,7 +39,7 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Testing',
-        'Framework:: Zope3',
+        'Framework :: Zope3',
         ],
     zip_safe=True,
     packages=find_packages('src'),
