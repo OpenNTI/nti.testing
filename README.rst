@@ -174,3 +174,24 @@ We would then proceed to write our test methods. The packages that we
 specified will be set up and torn down around every test method. In
 addition, the ``zope.testing`` cleanup functions will also run around
 every test method.
+
+Time
+====
+
+Having a clock that's guaranteed to move in a positive increasing way
+in every call to ``time.time`` is useful. ``nti.testing.time``
+provides a decorator to accomplish this that ensures values always are
+at least the current time and always are increasing. (It is not thread
+safe.) It can be applied to functions or methods, and optionally takes
+a ``granularity`` argument::
+
+  >>> from nti.testing.time import time_monotonically_increases
+  >>> from nti.testing.time import reset_monotonic_time
+  >>> @time_monotonically_increases(0.1) # increment by 0.1
+  ... def test():
+  ...     import time
+  ...     t1 = time.time()
+  ...     t2 = time.time()
+  ...     assert t2 == t1 + 0.1, (t2, t1)
+
+  >>> test()
