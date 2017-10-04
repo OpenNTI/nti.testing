@@ -56,7 +56,7 @@ class TestBase(unittest.TestCase):
         class MyTest(base.AbstractSharedTestBase):
             HANDLE_GC = True
             def test_thing(self):
-                pass
+                raise AssertionError("Not called")
 
         MyTest.setUpClass()
         assert_that(gc.isenabled(), is_(False if not base._is_pypy else True))
@@ -75,7 +75,7 @@ class TestBase(unittest.TestCase):
                                zope.traversing.tests.test_traverser)
 
             def test_thing(self):
-                pass
+                raise AssertionError("Not called")
 
         mt = MyTest('test_thing')
         mt.setUp()
@@ -90,7 +90,7 @@ class TestBase(unittest.TestCase):
                                zope.traversing.tests.test_traverser)
 
             def test_thing(self):
-                pass
+                raise AssertionError("Not called")
 
         MyTest.setUpClass()
         MyTest.tearDownClass()

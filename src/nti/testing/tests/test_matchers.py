@@ -6,13 +6,15 @@
 .. $Id$
 """
 
-from __future__ import print_function,  absolute_import, division
+from __future__ import print_function, absolute_import, division
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
 #disable: accessing protected members, too many methods
-#pylint: disable=W0212,R0904
+#pylint: disable=W0212,R0904,inherit-non-class
+# XXX: Fix these
+# pylint:disable=wrong-import-position,wrong-import-order,bad-whitespace
 
 import unittest
 from hamcrest import assert_that
@@ -87,7 +89,7 @@ class TestMatchers(unittest.TestCase):
             thing = 1
 
             def method(self):
-                return 1
+                raise AssertionError("Not called")
 
         assert_that(Thing(), matchers.verifiably_provides(IThing, IThing))
         assert_that(calling(assert_that).with_args(self, matchers.verifiably_provides(IThing)),
@@ -126,11 +128,37 @@ class TestMatchers(unittest.TestCase):
 
     def test_validated_by(self):
         from zope.schema import Int
+        from zope.schema.interfaces import WrongType
 
         assert_that(1, matchers.validated_by(Int()))
         assert_that('', matchers.not_validated_by(Int()))
+        with self.assertRaises(WrongType):
+            assert_that('', matchers.not_validated_by(Int(), invalid=NameError))
         assert_that(calling(assert_that).with_args('', matchers.validated_by(Int())),
                     raises(AssertionError, "failed to validate"))
+
+    def test_validated_by_defaults_to_Invalid(self):
+        from zope.interface.exceptions import Invalid
+        class Validator(object):
+            def validate(self, o):
+                raise o
+
+        validator = Validator()
+        class Arbitrary(Exception):
+            pass
+
+        with self.assertRaises(Arbitrary):
+            assert_that(Arbitrary(), matchers.validated_by(validator))
+
+        assert_that(calling(assert_that).with_args(Invalid(),
+                                                   matchers.validated_by(validator)),
+                    raises(AssertionError, "failed to validate"))
+
+        assert_that(calling(assert_that).with_args(Arbitrary,
+                                                   matchers.validated_by(validator,
+                                                                         invalid=Exception)),
+                    raises(AssertionError, "failed to validate"))
+
 
     def test_dict(self):
 

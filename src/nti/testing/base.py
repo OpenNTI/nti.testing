@@ -3,12 +3,12 @@
 """
 Base test classes and functions for setting up ZCA.
 
-$Id: base.py 42673 2014-07-05 14:43:39Z jason.madden $
 """
 
-from __future__ import print_function,  absolute_import, division
+from __future__ import print_function, absolute_import, division
 
-
+# XXX: Fix these.
+# pylint:disable=bad-whitespace,wrong-import-position,wrong-import-order
 
 logger = __import__('logging').getLogger(__name__)
 
@@ -146,8 +146,8 @@ class AbstractSharedTestBase(with_metaclass(_SharedTestBaseMetaclass, unittest.T
                 gc.enable()
 
             gc.collect(0) # collect now to clean up weak refs
-            if _is_pypy:
-                gc.collect(0) # PyPy sometimes needs two cycles to get them all
+            gc.collect(0) # PyPy sometimes needs two cycles to get them all
+
             assert_that( gc.garbage, is_( [] ) )
 
     def setUp(self):
@@ -204,7 +204,7 @@ def _configure(self=None, set_up_packages=(), features=('devmode','testmode'), c
                 # Did we pass in a test module (__name__) and there is no
                 # configuration in that package? In that case, we want to
                 # configure the parent package for sure
-                module_path = getattr( package, '__file__', None )
+                module_path = getattr(package, '__file__', '')
                 if (module_path
                     and 'tests' in module_path
                     and os.path.join(os.path.dirname(module_path), filename) == e.filename):
