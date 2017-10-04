@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 Hamcrest matchers for testing.
-
-$Id: matchers.py 37276 2014-04-16 13:53:09Z jason.madden $
 """
 
-from __future__ import print_function,  absolute_import, division
-
+from __future__ import print_function, absolute_import, division
+# XXX Fix all these
+# pylint:disable=wrong-import-position,wrong-import-order,bad-whitespace
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
@@ -182,14 +181,15 @@ def implements( iface ):
 
 class ValidatedBy(BaseMatcher):
 
-    def __init__( self, field ):
+    def __init__(self, field, invalid=Invalid):
         super(ValidatedBy,self).__init__()
         self.field = field
+        self.invalid = invalid
 
     def _matches( self, data ):
         try:
             self.field.validate( data )
-        except Exception:
+        except self.invalid:
             return False
         else:
             return True
@@ -201,7 +201,7 @@ class ValidatedBy(BaseMatcher):
         ex = None
         try:
             self.field.validate( item )
-        except Exception as e:
+        except self.invalid as e:
             ex = e
 
         mismatch_description.append_text( repr( self.field ) )
@@ -236,19 +236,37 @@ def aq_inContextOf( parent ):
     """
     return AqInContextOf( parent )
 
-def validated_by( field ):
-    """ Matches if the data is validated by the given IField """
-    return ValidatedBy( field )
+def validated_by(field, invalid=Invalid):
+    """
+    Matches if the data is validated by the given IField.
+
+    :keyword exception invalid: The types of exceptions that are considered
+        invalid. Anything other than this is allowed to be raised.
+
+    .. versionchanged:: 2.0.1
+       Add ``invalid`` and change it from ``Exception`` to
+       :class:`zope.interface.exceptions.Invalid`
+    """
+    return ValidatedBy(field, invalid=invalid)
 
 
-def not_validated_by( field ):
-    """ Matches if the data is NOT validated by the given IField. """
-    return is_not( validated_by( field ) )
+def not_validated_by(field, invalid=Invalid):
+    """
+    Matches if the data is NOT validated by the given IField.
+
+    :keyword exception invalid: The types of exceptions that are considered
+        invalid. Anything other than this is allowed to be raised.
+
+    .. versionchanged:: 2.0.1
+       Add ``invalid`` and change it from ``Exception`` to
+       :class:`zope.interface.exceptions.Invalid`
+    """
+    return is_not(validated_by(field, invalid=invalid))
 
 
 # Patch hamcrest for better descriptions of maps (json data)
 from hamcrest.core.base_description import BaseDescription
-if six.PY3:
+if six.PY3: # pragma: no cover
     from io import StringIO
 else:
     from cStringIO import StringIO

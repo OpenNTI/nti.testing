@@ -2,6 +2,17 @@
  nti.testing
 =============
 
+.. image:: https://travis-ci.org/NextThought/nti.testing.svg?branch=master
+  :target: https://travis-ci.org/NextThought/nti.testing
+
+.. image:: https://coveralls.io/repos/github/NextThought/nti.testing/badge.svg
+  :target: https://coveralls.io/github/NextThought/nti.testing
+
+.. image:: http://readthedocs.org/projects/ntitesting/badge/?version=latest
+  :target: http://ntitesting.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
+
+
 Support for writing tests, particularly in a Zope3/ZTK environment,
 using either nose2 or zope.testing.
 

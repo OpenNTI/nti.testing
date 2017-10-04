@@ -31,25 +31,23 @@ checker = renormalizing.RENormalizing([
 
 
 def test_suite():
+    here = os.path.dirname(__file__)
+
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestImport))
     suite.addTest(doctest.DocFileSuite(
         'test_component_cleanup_broken.txt'))
 
-    if os.path.exists('../../../../README.rst'):
-        suite.addTest(doctest.DocFileSuite(
-            '../../../../README.rst',
-            optionflags=doctest.ELLIPSIS,
-            checker=checker,
-        ))
-    elif os.path.exists('README.rst'):
-        # tox
-        suite.addTest(doctest.DocFileSuite(
-            os.path.abspath("README.rst"),
-            module_relative=False,
-            optionflags=doctest.ELLIPSIS,
-            checker=checker,
-        ))
+    readmedir = here
+    while not os.path.exists(os.path.join(readmedir, 'setup.py')):
+        readmedir = os.path.dirname(readmedir)
+    readme = os.path.join(readmedir, 'README.rst')
+    suite.addTest(doctest.DocFileSuite(
+        readme,
+        module_relative=False,
+        optionflags=doctest.ELLIPSIS,
+        checker=checker,
+    ))
     return suite
 
 
