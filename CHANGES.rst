@@ -3,7 +3,7 @@
 =========
 
 
-2.0.1 (unreleased)
+2.0.1 (2017-10-18)
 ==================
 
 - The validation matchers (``validated_by`` and ``not_validated_by``)
