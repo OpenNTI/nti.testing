@@ -20,7 +20,7 @@ from zope.component import eventtesting
 from zope.component.hooks import setHooks
 import zope.testing.cleanup
 
-from .base import _configure
+from .base import AbstractConfiguringObject
 from .base import sharedCleanup
 
 from hamcrest import assert_that
@@ -29,9 +29,6 @@ from hamcrest import is_
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
-
-# disable: accessing protected members, too many methods
-#pylint: disable=W0212
 
 class GCLayerMixin(object):
     """
@@ -148,50 +145,20 @@ class ZopeComponentLayer(SharedCleanupLayer):
 
 _marker = object()
 
-class ConfiguringLayerMixin(object):
+class ConfiguringLayerMixin(AbstractConfiguringObject):
     """
     Inherit from this layer *at the leaf level* to perform configuration.
-    You should have already inherited from ZopeComponentLayer.
+    You should have already inherited from :class:`ZopeComponentLayer`.
 
     To use this layer, subclass it and define a set of packages. This
     should be done EXACTLY ONCE for each set of packages; things that
     add to the set of packages should generally extend that layer
     class. You must call :meth:`setUpPackages` and :meth:`tearDownPackages`
     from your ``setUp`` and ``tearDown`` methods.
+
+    See :class:`~.AbstractConfiguringObject` for documentation on
+    the class attributes to configure.
     """
-
-    # TODO: Unify the code and docs with that from
-    # .base.[Shared]ConfiguringTestBase.
-
-    #: Class attribute naming a sequence of package objects or strings
-    #: naming packages. These will be configured, in order, using
-    #: ZCML. The ``configure.zcml`` package from each package will be
-    #: loaded. Instead of a package object, each item can be a tuple
-    #: of (filename, package); in that case, the given file (usually
-    #: ``meta.zcml``) will be loaded from the given package.
-    set_up_packages = ()
-
-    #: Class attribute naming a sequence of strings to be added as
-    #: features before loading the configuration. By default, this is
-    #: ``devmode`` and ``testmode``. (Devmode is suitable for running
-    #: the application, testmode is only suitable for unit tests.)
-    features = ('devmode', 'testmode')
-
-    #: Class attribute that is a boolean defaulting to True. When
-    #: true, the :mod:`zope.component.eventtesting` module will be
-    #: configured.
-    #:
-    #: .. note:: If there are any ``set_up_packages`` you are
-    #:           responsible for ensuring that the :mod:`zope.component`
-    #:           configuration is loaded.
-    configure_events = True
-
-    #: Instance attribute defined by :meth:`setUp` that is the :class:`~.ConfigurationMachine`
-    #: that was used to load configuration data (if any). This can be
-    #: used by individual methods to load more configuration data
-    #: using :meth:`configure_packages` or the methods from
-    #: :mod:`zope.configuration`
-    configuration_context = None
 
     @classmethod
     def setUp(cls):
@@ -214,27 +181,34 @@ class ConfiguringLayerMixin(object):
         # Must implement
         pass
 
+    #: .. seealso:: :meth:`~.AbstractConfiguringObject.get_configuration_package_for_class`
+    #: .. versionadded:: 2.1.0
+    get_configuration_package = classmethod(
+        AbstractConfiguringObject.get_configuration_package_for_class
+    )
+
     @classmethod
     def setUpPackages(cls):
+        """
+        Set up the configured packages.
+        """
         logger.info('Setting up packages %s for layer %s', cls.set_up_packages, cls)
         gc.collect()
         cls.configuration_context = cls.configure_packages(
             set_up_packages=cls.set_up_packages,
             features=cls.features,
-            context=cls.configuration_context)
+            context=cls.configuration_context,
+            package=cls.get_configuration_package())
         component.provideHandler(eventtesting.events.append, (None,))
         gc.collect()
 
-    @classmethod
-    def configure_packages(cls, set_up_packages=(), features=(), context=None):
-        cls.configuration_context = _configure(self=cls,
-                                               set_up_packages=set_up_packages,
-                                               features=features,
-                                               context=context or cls.configuration_context)
-        return cls.configuration_context
+    configure_packages = classmethod(AbstractConfiguringObject._do_configure_packages)
 
     @classmethod
     def tearDownPackages(cls):
+        """
+        Tear down all configured packages in the global site manager.
+        """
         # This is a duplicate of zope.component.globalregistry
         logger.info('Tearing down packages %s for layer %s', cls.set_up_packages, cls)
         gc.collect()
@@ -258,7 +232,7 @@ def find_test():
     i = 2
     while True:
         try:
-            frame = sys._getframe(i)
+            frame = sys._getframe(i) # pylint:disable=protected-access
             i = i + 1
         except ValueError: # pragma: no cover
             return None
