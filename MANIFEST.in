@@ -1,4 +1,5 @@
 include .coveragerc
+include .travis.yml
 include CHANGES.rst
 include INSTALL
 include README.rst
@@ -9,3 +10,8 @@ include tox.ini
 include .nti_cover_package
 recursive-include src *.txt
 recursive-include src *.py
+
+include *.txt
+include .isort.cfg
+recursive-include docs *.py
+recursive-include docs *.rst
