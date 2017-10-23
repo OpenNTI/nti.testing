@@ -14,7 +14,9 @@
 
 
 Support for writing tests, particularly in a Zope3/ZTK environment,
-using either nose2 or zope.testing.
+using zope.testing (nose2 may also work, but is not recommended).
+
+Complete documentation is hosted at https://ntitesting.readthedocs.io/
 
 Installation
 ============

@@ -4,21 +4,7 @@
 .project
 *.egg-info
 *.pyc
-*.sublime-*
 .coverage
 htmlcov/
-bin/
-develop-eggs/
-dist/
-eggs/
-include/
-lib/
-parts/
 
-doc/_build
-doc/__pycache__
-doc/relstorage.*.rst
-doc/changelog.rst
-/.settings/
-/.eggs/
-/build/
+docs/_build/
