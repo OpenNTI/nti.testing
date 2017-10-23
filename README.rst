@@ -2,16 +2,23 @@
  nti.testing
 =============
 
+.. image:: https://img.shields.io/pypi/v/nti.testing.svg
+        :target: https://pypi.python.org/pypi/nti.testing/
+        :alt: Latest release
+
+.. image:: https://img.shields.io/pypi/pyversions/nti.testing.svg
+        :target: https://pypi.org/project/nti.testing/
+        :alt: Supported Python versions
+
 .. image:: https://travis-ci.org/NextThought/nti.testing.svg?branch=master
-  :target: https://travis-ci.org/NextThought/nti.testing
+        :target: https://travis-ci.org/NextThought/nti.testing
 
 .. image:: https://coveralls.io/repos/github/NextThought/nti.testing/badge.svg
-  :target: https://coveralls.io/github/NextThought/nti.testing
+        :target: https://coveralls.io/github/NextThought/nti.testing
 
 .. image:: http://readthedocs.org/projects/ntitesting/badge/?version=latest
-  :target: http://ntitesting.readthedocs.io/en/latest/?badge=latest
-  :alt: Documentation Status
-
+        :target: http://ntitesting.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
 
 Support for writing tests, particularly in a Zope3/ZTK environment,
 using zope.testing (nose2 may also work, but is not recommended).
