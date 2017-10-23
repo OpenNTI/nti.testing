@@ -1,36 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-
-
-.. $Id$
+Test for layers.py.
 """
 
-from __future__ import print_function,  absolute_import, division
-__docformat__ = "restructuredtext en"
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-logger = __import__('logging').getLogger(__name__)
-
-#disable: accessing protected members, too many methods
-#pylint: disable=W0212,R0904
-
+# stdlib imports
 import unittest
+
+from nti.testing import layers
+
 from hamcrest import assert_that
 from hamcrest import is_
 
-from nti.testing import layers
+__docformat__ = "restructuredtext en"
+
 
 class TestLayers(unittest.TestCase):
 
     def test_find_test(self):
 
-        def foo():
+        def func():
             assert_that(layers.find_test(), is_(self))
 
-        foo()
+        func()
 
         def via_test(test):
-            foo()
+            func()
 
         via_test(self)
 
@@ -60,5 +59,6 @@ class TestLayers(unittest.TestCase):
         class Layer(layers.ConfiguringLayerMixin):
             set_up_packages = ('zope.component',)
 
-        for meth in 'setUp', 'tearDown', 'testSetUp', 'testTearDown', 'setUpPackages', 'tearDownPackages':
+        for meth in ('setUp', 'tearDown', 'testSetUp', 'testTearDown',
+                     'setUpPackages', 'tearDownPackages'):
             getattr(Layer, meth)()

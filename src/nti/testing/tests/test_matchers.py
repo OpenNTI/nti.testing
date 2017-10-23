@@ -1,29 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-
-
-.. $Id$
+Tests for matchers.py.
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-logger = __import__('logging').getLogger(__name__)
-
-#disable: accessing protected members, too many methods
-#pylint: disable=W0212,R0904,inherit-non-class
-# XXX: Fix these
-# pylint:disable=wrong-import-position,wrong-import-order,bad-whitespace
-
+# stdlib imports
 import unittest
+
+from nti.testing import matchers
+
 from hamcrest import assert_that
-from hamcrest import is_
 from hamcrest import calling
+
 from hamcrest import raises
 
-from nti.testing import base
-from nti.testing import matchers
+__docformat__ = "restructuredtext en"
+
+
+#pylint:disable=inherit-non-class
+
 
 class TestMatchers(unittest.TestCase):
 
@@ -81,7 +80,7 @@ class TestMatchers(unittest.TestCase):
         class IThing(interface.Interface):
             thing = interface.Attribute("thing")
 
-            def method():
+            def method(): # pylint:disable=no-method-argument
                 "method"
 
         @interface.implementer(IThing)
@@ -97,7 +96,8 @@ class TestMatchers(unittest.TestCase):
 
         broken_thing = Thing()
         broken_thing.method = None
-        assert_that(calling(assert_that).with_args(broken_thing, matchers.verifiably_provides(IThing)),
+        assert_that(calling(assert_that).with_args(broken_thing,
+                                                   matchers.verifiably_provides(IThing)),
                     raises(AssertionError, "violates its contract"))
 
         del Thing.thing
@@ -170,7 +170,7 @@ class TestMatchers(unittest.TestCase):
                     raises(AssertionError, "instance of int"))
 
     def test_in_context(self):
-
+        # pylint:disable=attribute-defined-outside-init
         class Thing(object):
             pass
 

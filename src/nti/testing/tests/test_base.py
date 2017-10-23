@@ -1,25 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-
+Tests for base.py.
 
 .. $Id$
 """
 
-from __future__ import print_function,  absolute_import, division
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+# stdlib imports
+import unittest
+
+from nti.testing import base
+from nti.testing.matchers import has_attr
+
+from hamcrest import assert_that
+from hamcrest import is_
+
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
 
 #disable: accessing protected members, too many methods
 #pylint: disable=W0212,R0904
-
-import unittest
-from hamcrest import assert_that
-from hamcrest import is_
-
-from nti.testing import base
-from nti.testing.matchers import has_attr
 
 class TestBase(unittest.TestCase):
 
@@ -85,6 +90,7 @@ class TestBase(unittest.TestCase):
     def test_shared_configuring_base(self):
         import zope.traversing.tests.test_traverser
         class MyTest(base.SharedConfiguringTestBase):
+            layer = None # replaced by metaclass
             set_up_packages = ('zope.component',
                                ('configure.zcml', 'zope.component'),
                                zope.traversing.tests.test_traverser)
