@@ -1,22 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function,  absolute_import, division
-__docformat__ = "restructuredtext en"
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-logger = __import__('logging').getLogger(__name__)
-
-#disable: accessing protected members, too many methods
-#pylint: disable=W0212,R0904
-
+# stdlib imports
 import unittest
+
+from nti.testing.time import reset_monotonic_time
+from nti.testing.time import time_monotonically_increases
+
 from hamcrest import assert_that
-from hamcrest import is_
 from hamcrest import greater_than
 from hamcrest import greater_than_or_equal_to
+from hamcrest import is_
 from hamcrest import less_than
 
-from nti.testing.time import time_monotonically_increases, reset_monotonic_time
+__docformat__ = "restructuredtext en"
 
 class TestTime(unittest.TestCase):
 
@@ -115,6 +116,3 @@ class TestTime(unittest.TestCase):
         after_third = f3()
         current_real = time.time()
         assert_that(current_real, is_(greater_than_or_equal_to(after_third)))
-
-if __name__ == '__main__':
-    unittest.main()
