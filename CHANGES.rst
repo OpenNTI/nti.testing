@@ -11,6 +11,13 @@
 - Remove dependency on ``fudge``. Instead, we now use ``unittest.mock`` on
   Python 3, or its backport ``mock`` on Python 2. See `issue 11
   <https://github.com/NextThought/nti.testing/issues/11>`_.
+- Refactor ZCML configuration support to share more code and
+  documentation. See `issue 10
+  <https://github.com/NextThought/nti.testing/issues/10>`_.
+- The layer ``ConfiguringLayerMixin`` and the base class
+  ``SharedConfiguringTestBase`` now default to running
+  configuration in the package the subclass is defined in, just as
+  subclasses of ``ConfiguringTestBase`` did.
 
 2.0.1 (2017-10-18)
 ==================
