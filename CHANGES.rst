@@ -3,12 +3,14 @@
 =========
 
 
-2.0.2 (unreleased)
+2.1.0 (unreleased)
 ==================
 
 - Make ``Acquisition`` an optional dependency. If it is not installed,
   the ``aq_inContextOf`` matcher will always return False.
-
+- Remove dependency on ``fudge``. Instead, we now use ``unittest.mock`` on
+  Python 3, or its backport ``mock`` on Python 2. See `issue 11
+  <https://github.com/NextThought/nti.testing/issues/11>`_.
 
 2.0.1 (2017-10-18)
 ==================

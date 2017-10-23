@@ -4,7 +4,7 @@ import codecs
 from setuptools import setup, find_packages
 
 
-version = '2.0.2.dev0'
+version = '2.1.0.dev0'
 
 entry_points = {
 }
@@ -49,7 +49,6 @@ setup(
     namespace_packages=['nti'],
     install_requires=[
         'zope.interface >= 4.1.2', # Listing first to work around a Travis CI issue
-        'fudge',
         'pyhamcrest',
         'six',
         'setuptools',
@@ -67,6 +66,10 @@ setup(
         'docs': [
             'Sphinx',
             'sphinx_rtd_theme',
+        ],
+        ':python_version == "2.7"' : [
+            # backport of unittest.mock for Python 2.7.
+            'mock',
         ],
     },
 )
