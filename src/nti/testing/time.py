@@ -4,18 +4,18 @@
 Test support for working with clocks and time.
 """
 
-from __future__ import print_function,  absolute_import, division
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-__docformat__ = "restructuredtext en"
-
-# disable: accessing protected members, too many methods
-#pylint: disable=W0212,R0904
-
+# stdlib imports
 import functools
+from time import time as _real_time
+
 import fudge
 import six
 
-from time import time as _real_time
+__docformat__ = "restructuredtext en"
 
 _current_time = _real_time()
 
@@ -27,7 +27,7 @@ class _TimeWrapper(object):
     def __call__(self, func):
         @fudge.patch('time.time')
         @functools.wraps(func)
-        def wrapper( *args, **kwargs ):
+        def wrapper(*args, **kwargs):
 
             fake_time = args[-1]
             assert isinstance(fake_time, fudge.Fake), args
@@ -39,9 +39,9 @@ class _TimeWrapper(object):
                 _current_time = max(_real_time(), _current_time + self._granularity)
                 return _current_time
             fake_time.is_callable()
-            fake_time._callable.call_replacement = incr
+            fake_time._callable.call_replacement = incr # pylint:disable=protected-access
 
-            return func( *args, **kwargs )
+            return func(*args, **kwargs)
         return wrapper
 
 
@@ -100,7 +100,7 @@ def time_monotonically_increases(func_or_granularity):
        Allow specifying the granularity of clock increments. Keep at
        1.0 seconds for backwards compatibility by default.
     """
-    if isinstance(func_or_granularity, six.integer_types) or isinstance(func_or_granularity, float):
+    if isinstance(func_or_granularity, (six.integer_types, float)):
         # We're being used as a factory.
         wrapper_factory = _TimeWrapper(func_or_granularity)
         return wrapper_factory

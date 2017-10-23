@@ -10,6 +10,7 @@ entry_points = {
 }
 
 TESTS_REQUIRE = [
+    'Acquisition',
     'zope.site',
     'zope.testrunner',
 ]
@@ -48,7 +49,6 @@ setup(
     namespace_packages=['nti'],
     install_requires=[
         'zope.interface >= 4.1.2', # Listing first to work around a Travis CI issue
-        'Acquisition',
         'fudge',
         'pyhamcrest',
         'six',

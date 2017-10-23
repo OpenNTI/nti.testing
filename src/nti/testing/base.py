@@ -459,22 +459,24 @@ def module_teardown():
     # resetHooks()
     zope.testing.cleanup.tearDown()
 
-# The cleanup that we get by importing just zope.interface and zope.component
-# has a problem:
-# zope.component installs adapter hooks that cause the use of interfaces
-# as functions to direct through the current site manager (as does the global component API).
-# This adapter hook is a cached function of an implementation detail of the site manager:
-# siteManager.adapters.adapter_hook.
+# The cleanup that we get by importing just zope.interface and
+# zope.component has a problem: zope.component installs adapter hooks
+# that cause the use of interfaces as functions to direct through the
+# current site manager (as does the global component API). This
+# adapter hook is a cached function of an implementation detail of the
+# site manager: siteManager.adapters.adapter_hook.
 #
 # If no site is ever set, this caches the adapter_hook of the globalSiteManager.
 #
-# When the zope.component cleanup runs, it swizzles out the internals of the
-# globalSiteManager by re-running __init__. However, it does not clear the cached
-# adapter_hook. Thus, subsequent uses of the adapter hook (interface calls, or use
-# of the global component API) continue to use the *old* adapter registry (which is no
-# longer easy to access and inspect, especially when the C hook optimizations are in use)
-# If any non-ZCML registrations are made (or the next test loads a subset of the ZCML the previous test
-# did) then this manifests as strange adapter failures.
+# When the zope.component cleanup runs, it swizzles out the internals
+# of the globalSiteManager by re-running __init__. However, it does
+# not clear the cached adapter_hook. Thus, subsequent uses of the
+# adapter hook (interface calls, or use of the global component API)
+# continue to use the *old* adapter registry (which is no longer easy
+# to access and inspect, especially when the C hook optimizations are
+# in use) If any non-ZCML registrations are made (or the next test
+# loads a subset of the ZCML the previous test did) then this
+# manifests as strange adapter failures.
 #
 # This is obviously all implementation detail. So rather than "fix" the problem
 # ourself, the solution is to import zope.site.site to ensure that the site gets
