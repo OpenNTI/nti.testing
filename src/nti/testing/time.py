@@ -12,7 +12,11 @@ from __future__ import print_function
 import functools
 from time import time as _real_time
 
-import fudge
+try:
+    from unittest import mock
+except ImportError:
+    import mock
+
 import six
 
 __docformat__ = "restructuredtext en"
@@ -25,12 +29,12 @@ class _TimeWrapper(object):
         self._granularity = granularity
 
     def __call__(self, func):
-        @fudge.patch('time.time')
+        @mock.patch('time.time')
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
 
             fake_time = args[-1]
-            assert isinstance(fake_time, fudge.Fake), args
+            assert isinstance(fake_time, mock.Mock), args
             args = args[:-1]
 
             # make time monotonically increasing
@@ -38,8 +42,7 @@ class _TimeWrapper(object):
                 global _current_time # pylint:disable=global-statement
                 _current_time = max(_real_time(), _current_time + self._granularity)
                 return _current_time
-            fake_time.is_callable()
-            fake_time._callable.call_replacement = incr # pylint:disable=protected-access
+            fake_time.side_effect = incr
 
             return func(*args, **kwargs)
         return wrapper

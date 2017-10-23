@@ -1,7 +1,5 @@
 .installed.cfg
-.dir-locals.el
-.pydevproject
-.project
+
 *.egg-info
 *.pyc
 .coverage
