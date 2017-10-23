@@ -6,7 +6,8 @@
 2.0.2 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Make ``Acquisition`` an optional dependency. If it is not installed,
+  the ``aq_inContextOf`` matcher will always return False.
 
 
 2.0.1 (2017-10-18)
