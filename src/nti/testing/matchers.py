@@ -9,7 +9,11 @@ from __future__ import division
 from __future__ import print_function
 
 # stdlib imports
-import collections
+try:
+    from collections.abc import Sequence, Mapping
+except ImportError:
+    # Python 2
+    from collections import Sequence, Mapping
 import pprint
 
 import six
@@ -304,7 +308,7 @@ else:
 _orig_append_description_of = BaseDescription.append_description_of
 def _append_description_of_map(self, value):
     if not hasattr(value, 'describe_to'):
-        if isinstance(value, (collections.Mapping, collections.Sequence)):
+        if isinstance(value, (Mapping, Sequence)):
             sio = StringIO()
             pprint.pprint(value, sio)
             self.append(sio.getvalue())

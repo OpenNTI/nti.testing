@@ -3,10 +3,13 @@
 =========
 
 
-2.1.1 (unreleased)
+2.2.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for Python 3.7.
+
+- Make ``time_monotonically_increases`` also handle ``time.gmtime``
+  and add a helper for using it in layers.
 
 
 2.1.0 (2017-10-23)
