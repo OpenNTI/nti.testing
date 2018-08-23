@@ -20,7 +20,8 @@ notifications:
   email: dev-regression-tests@nextthought.com
 
 install:
-  - pip install -U pip setuptools
+  - pip install -U pip setuptools wheel
+  - pip install -U persistent # https://travis-ci.org/NextThought/nti.testing/jobs/419696474
   - pip install -U coveralls coverage
   - pip install -U -e ".[test]"
 
