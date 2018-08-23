@@ -10,7 +10,10 @@ from __future__ import print_function
 
 # stdlib imports
 import functools
+from threading import Lock
+import time
 from time import time as _real_time
+from time import gmtime as _real_gmtime
 
 try:
     from unittest import mock
@@ -23,45 +26,71 @@ __docformat__ = "restructuredtext en"
 
 _current_time = _real_time()
 
+
 class _TimeWrapper(object):
 
     def __init__(self, granularity=1.0):
         self._granularity = granularity
+        self._lock = Lock()
+        self.fake_gmtime = mock.Mock()
+        self.fake_time = mock.Mock()
+        self._configure_fakes()
+
+    def _configure_fakes(self):
+        def incr():
+            global _current_time # pylint:disable=global-statement
+            with self._lock:
+                _current_time = max(_real_time(), _current_time + self._granularity)
+            return _current_time
+        self.fake_time.side_effect = incr
+
+        def incr_gmtime(*seconds):
+            if seconds:
+                assert len(seconds) == 1
+                now = seconds[0]
+            else:
+                now = incr()
+            return _real_gmtime(now)
+        self.fake_gmtime.side_effect = incr_gmtime
+
+    def install_fakes(self):
+        time.time = self.fake_time
+        time.gmtime = self.fake_gmtime
+
+    __enter__ = install_fakes
+
+    def close(self, *args):
+        time.time = _real_time
+        time.gmtime = _real_gmtime
+
+    __exit__ = close
 
     def __call__(self, func):
-        @mock.patch('time.time')
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-
-            fake_time = args[-1]
-            assert isinstance(fake_time, mock.Mock), args
-            args = args[:-1]
-
-            # make time monotonically increasing
-            def incr():
-                global _current_time # pylint:disable=global-statement
-                _current_time = max(_real_time(), _current_time + self._granularity)
-                return _current_time
-            fake_time.side_effect = incr
-
-            return func(*args, **kwargs)
+            with self:
+                return func(*args, **kwargs)
         return wrapper
+
 
 
 def time_monotonically_increases(func_or_granularity):
     """
     Decorate a unittest method with this function to cause the value
-    of :func:`time.time` to monotonically increase by one each time it
-    is called. This ensures things like last modified dates always
-    increase.
+    of :func:`time.time` (and :func:`time.gmtime`) to monotonically
+    increase by one each time it is called. This ensures things like
+    last modified dates always increase.
 
     We make three guarantees about the value of :func:`time.time`
     returned while the decorated function is running:
 
-    1. It is always *at least* the value of the *real* :func:`time.time`;
-    2. Each call returns a value greater than the previous call;
-    3. Those two constraints hold across different invocations of functions
-       decorated.
+        1. It is always *at least* the value of the *real*
+           :func:`time.time`;
+
+        2. Each call returns a value greater than the previous call;
+
+        3. Those two constraints hold across different invocations of
+           functions decorated.
 
     This decorator can be applied to a method in a test case::
 
@@ -71,16 +100,17 @@ def time_monotonically_increases(func_or_granularity):
               t = time.time()
                ...
 
-    It can also be applied to a bare function taking any number of arguments::
+    It can also be applied to a bare function taking any number of
+    arguments::
 
         @time_monotonically_increases
         def utility_function(a, b, c=1):
            t = time.time()
            ...
 
-    By default, the time will be incremented in 1.0 second intervals. You can
-    specify a particular granularity as an argument; this is useful to keep from
-    running too far ahead of the real clock::
+    By default, the time will be incremented in 1.0 second intervals.
+    You can specify a particular granularity as an argument; this is
+    useful to keep from running too far ahead of the real clock::
 
         @time_monotonically_increases(0.1)
         def smaller_increment():
@@ -88,6 +118,10 @@ def time_monotonically_increases(func_or_granularity):
             t2 = time.time()
             assrt t2 == t1 + 0.1
 
+    .. versionchanged:: 2.1
+       Add support for ``time.gmtime``.
+    .. versionchanged:: 2.1
+       Now thread safe.
     .. versionchanged:: 2.0
        The decorated function returns whatever the passed function returns.
     .. versionchanged:: 2.0
@@ -112,6 +146,7 @@ def time_monotonically_increases(func_or_granularity):
     wrapper_factory = _TimeWrapper()
     return wrapper_factory(func_or_granularity)
 
+
 def reset_monotonic_time(value=0.0):
     """
     Make the monotonic clock return the real time on its next
@@ -122,3 +157,24 @@ def reset_monotonic_time(value=0.0):
 
     global _current_time # pylint:disable=global-statement
     _current_time = value
+
+
+class MonotonicallyIncreasingTimeLayerMixin(object):
+    """
+    A helper for layers that need time to increase monotonically.
+
+    You can either mix this in to a layer object, or instantiate it
+    and call the methods directly.
+
+    .. versionadded:: 2.2
+    """
+
+    def __init__(self, granularity=1.0):
+        self.time_manager = _TimeWrapper(granularity)
+
+    def testSetUp(self):
+        self.time_manager.install_fakes()
+
+    def testTearDown(self):
+        self.time_manager.close()
+        reset_monotonic_time()
