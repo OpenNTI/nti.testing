@@ -54,6 +54,21 @@ class TestBase(unittest.TestCase):
 
         base._shared_cleanups.remove((func, (), {}))
 
+    def test_explicit_transaction_cleanup(self):
+        import transaction
+        import zope.testing
+        transaction.manager.explicit = True
+        transaction.begin()
+
+        zope.testing.cleanup.cleanUp()
+        assert_that(transaction.manager, has_attr('explicit', False))
+
+    def test_explicit_transaction_cleanup_no_transaction(self):
+        import transaction
+        import zope.testing
+        transaction.manager.explicit = True
+        zope.testing.cleanup.cleanUp()
+        assert_that(transaction.manager, has_attr('explicit', False))
 
     def test_shared_test_base_cover(self):
         # Just coverage.
@@ -83,9 +98,9 @@ class TestBase(unittest.TestCase):
                 raise AssertionError("Not called")
 
         mt = MyTest('test_thing')
-        mt.setUp()
+        mt.setUp() # pylint:disable=no-value-for-parameter
         mt.configure_string('<configure xmlns="http://namespaces.zope.org/zope" />')
-        mt.tearDown()
+        mt.tearDown() # pylint:disable=no-value-for-parameter
 
     def test_shared_configuring_base(self):
         import zope.traversing.tests.test_traverser

@@ -20,7 +20,7 @@ import unittest
 
 import six
 from six import with_metaclass
-import transaction
+
 from zope import component
 from zope.component import eventtesting
 from zope.component.hooks import setHooks
@@ -32,6 +32,7 @@ import zope.testing.cleanup
 from hamcrest import assert_that
 from hamcrest import is_
 
+from . import transactionCleanUp
 
 logger = __import__('logging').getLogger(__name__)
 
@@ -115,7 +116,7 @@ class AbstractConfiguringObject(object):
         eventtesting.clearEvents() # redundant with zope.testing.cleanup
         # we never actually want to do this, it's not needed and can mess up other fixtures
         # resetHooks()
-        transaction.abort() # see comments above
+        transactionCleanUp()
         if clear_configuration_context:
             obj.configuration_context = None
         if super_tear_down is not None:
@@ -136,13 +137,15 @@ class AbstractConfiguringObject(object):
         ``nti.appserver``.
         """
         module = klass.__module__
-        if module:
-            module_parts = module.split('.')
-            if module_parts[-1].startswith('test') and module_parts[-2] == 'tests':
-                module = '.'.join(module_parts[0:-2])
+        if not module: # pragma: no cover
+            return None
 
-            package = sys.modules[module]
-            return package
+        module_parts = module.split('.')
+        if module_parts[-1].startswith('test') and module_parts[-2] == 'tests':
+            module = '.'.join(module_parts[0:-2])
+
+        package = sys.modules[module]
+        return package
 
 
 class AbstractTestBase(zope.testing.cleanup.CleanUp, unittest.TestCase):
@@ -191,7 +194,7 @@ class SharedTestBaseMetaclass(type):
     it's easy to workaround.)
     """
 
-    def __new__(mcs, name, bases, cdict):
+    def __new__(mcs, name, bases, cdict): # pylint:disable=bad-mcs-classmethod-argument
         the_type = type.__new__(mcs, name, bases, cdict)
         # TODO: Based on certain features of the the_type
         # like set_up_packages and features, we can probably

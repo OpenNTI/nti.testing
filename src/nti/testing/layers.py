@@ -14,12 +14,13 @@ import gc
 import sys
 import unittest
 
-import transaction
+
 from zope import component
 from zope.component import eventtesting
 from zope.component.hooks import setHooks
 import zope.testing.cleanup
 
+from . import transactionCleanUp
 from .base import AbstractConfiguringObject
 from .base import sharedCleanup
 
@@ -141,7 +142,7 @@ class ZopeComponentLayer(SharedCleanupLayer):
     def testTearDown(cls):
         # Some tear down needs to happen always
         eventtesting.clearEvents()
-        transaction.abort() # see comments above
+        transactionCleanUp()
 
 _marker = object()
 
