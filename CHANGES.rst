@@ -6,7 +6,12 @@
 2.2.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Make transaction cleanup safer if the default transaction manager
+  has been made explicit.
+
+  Also, reset the default transaction manager to implicit.
+
+  See `issue 17 <https://github.com/NextThought/nti.testing/issues/17>`_.
 
 
 2.2.0 (2018-08-24)
