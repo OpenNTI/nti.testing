@@ -3,7 +3,7 @@
 =========
 
 
-2.2.1 (unreleased)
+2.2.1 (2019-09-10)
 ==================
 
 - Make transaction cleanup safer if the default transaction manager
