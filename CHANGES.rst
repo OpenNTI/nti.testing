@@ -3,11 +3,13 @@
 =========
 
 
-2.2.2 (unreleased)
+3.0.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for Python 3.8.
 
+- Require zope.interface 5.1. This lets the interface matchers produce
+  much more informative error messages.
 
 2.2.1 (2019-09-10)
 ==================

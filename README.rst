@@ -79,7 +79,7 @@ implements it::
    ...     got_that_thing_i_sent_you = Attribute("Did you get that thing?")
    >>> @implementer(IThings)
    ... class Thing(object):
-   ...     pass
+   ...     def __repr__(self): return "<object Thing>"
 
    >>> from nti.testing.matchers import provides, implements
    >>> assert_that(Thing(), provides(IThings))
@@ -91,15 +91,33 @@ where the next stricter check comes in. ``verifiably_provides`` uses
 the interface machinery to determine that all attributes and methods
 specified by the interface are present as described::
 
-
   >>> from nti.testing.matchers import verifiably_provides
   >>> assert_that(Thing(), verifiably_provides(IThing2, IThing1))
   >>> assert_that(Thing(), verifiably_provides(IThings))
   Traceback (most recent call last):
   ...
   AssertionError:...
-  Expected: object verifiably providing IThings
-       but: <class 'Thing'> failed to provide attribute "got_that_thing_i_sent_you" from IThings
+  Expected: object verifiably providing <InterfaceClass ...IThings>
+       but: Using class <class 'Thing'> the object <object Thing> has failed to implement interface <InterfaceClass ....IThings>: The ....IThings.got_that_thing_i_sent_you attribute was not provided.
+  <BLANKLINE>
+
+If multiple attributes or methods are not provided, all such missing
+information is reported::
+
+  >>> class IThingReceiver(IThings):
+  ...    def receive(some_thing):
+  ...        """Get the thing"""
+  >>> @implementer(IThingReceiver)
+  ... class ThingReceiver(object):
+  ...     def __repr__(self): return "<object ThingReceiver>"
+  >>> assert_that(ThingReceiver(), verifiably_provides(IThingReceiver))
+  Traceback (most recent call last):
+  ...
+  AssertionError:...
+  Expected: object verifiably providing <InterfaceClass ...IThingReceiver>
+       but: Using class <class 'ThingReceiver'> the object <object ThingReceiver> has failed to implement interface <InterfaceClass ....IThingReceiver>:
+            The ....IThings.got_that_thing_i_sent_you attribute was not provided
+            The ....IThingReceiver.receive(some_thing) attribute was not provided
   <BLANKLINE>
 
 ``zope.interface`` can only check whether or not an attribute or
@@ -112,7 +130,7 @@ values of the attributes, we can step up to ``zope.schema`` and the
   ...     got_that_thing_i_sent_you = Bool()
   >>> @implementer(IBoolThings)
   ... class BoolThing(object):
-  ...     pass
+  ...     def __repr__(self): return "<object BoolThing>"
 
 ``validly_provides`` is a superset of ``verifiably_provides``::
 
@@ -122,8 +140,8 @@ values of the attributes, we can step up to ``zope.schema`` and the
   Traceback (most recent call last):
   ...
   AssertionError:...
-  Expected: (object verifiably providing IBoolThings and object validly providing <InterfaceClass ....IBoolThings>)
-       but: object verifiably providing IBoolThings <class 'BoolThing'> failed to provide attribute "got_that_thing_i_sent_you" from IBoolThings
+  Expected: (object verifiably providing <InterfaceClass ...IBoolThings> and object validly providing <InterfaceClass ....IBoolThings>)
+       but: object verifiably providing <InterfaceClass ....IBoolThings> Using class <class 'BoolThing'> the object <object BoolThing> has failed to implement interface <InterfaceClass ....IBoolThings>: The ....IBoolThings.got_that_thing_i_sent_you attribute was not provided.
   <BLANKLINE>
 
 For finer grained control, we can compare data against schema fields::

@@ -13,6 +13,7 @@ TESTS_REQUIRE = [
     'Acquisition',
     'zope.site',
     'zope.testrunner',
+    'ZODB',
 ]
 
 def _read(fname):
@@ -29,6 +30,9 @@ setup(
     license='Apache',
     keywords='nose2 testing zope3 ZTK hamcrest',
     url='https://github.com/NextThought/nti.testing',
+    project_urls={
+        'Documentation': 'https://ntitesting.readthedocs.io/en/latest/',
+    },
     classifiers=[
         'Intended Audience :: Developers',
         'Natural Language :: English',
@@ -39,6 +43,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Testing',
@@ -49,7 +54,7 @@ setup(
     package_dir={'': 'src'},
     namespace_packages=['nti'],
     install_requires=[
-        'zope.interface >= 4.1.2', # Listing first to work around a Travis CI issue
+        'zope.interface >= 5.1', # Error messages changed.
         'pyhamcrest',
         'six',
         'setuptools',

@@ -91,18 +91,26 @@ class TestMatchers(unittest.TestCase):
                 raise AssertionError("Not called")
 
         assert_that(Thing(), matchers.verifiably_provides(IThing, IThing))
-        assert_that(calling(assert_that).with_args(self, matchers.verifiably_provides(IThing)),
-                    raises(AssertionError, "does not implement"))
+        # We have a nice multi-line error message, but we can only match one line at a time
+        for line in (
+                'verifiably providing .*IThing',
+                'Using class.*has failed to implement',
+                'Does not declaratively implement',
+                'thing attribute was not provided',
+                r'method\(\) attribute was not provided',
+        ):
+            assert_that(calling(assert_that).with_args(self, matchers.verifiably_provides(IThing)),
+                        raises(AssertionError, line))
 
         broken_thing = Thing()
         broken_thing.method = None
         assert_that(calling(assert_that).with_args(broken_thing,
                                                    matchers.verifiably_provides(IThing)),
-                    raises(AssertionError, "violates its contract"))
+                    raises(AssertionError, r"The contract of.*method\(\) is violated"))
 
         del Thing.thing
         assert_that(calling(assert_that).with_args(Thing(), matchers.verifiably_provides(IThing)),
-                    raises(AssertionError, "failed to provide attribute"))
+                    raises(AssertionError, "thing attribute was not provided"))
 
     def test_validly_provides(self):
 
@@ -117,8 +125,15 @@ class TestMatchers(unittest.TestCase):
             thing = 1
 
         assert_that(Thing(), matchers.validly_provides(IThing, IThing))
-        assert_that(calling(assert_that).with_args(self, matchers.validly_provides(IThing)),
-                    raises(AssertionError, "does not implement"))
+        # We have a nice multi-line error message, but we can only match one line at a time
+        for line in (
+                'verifiably providing .*IThing.*validly providing.*IThing',
+                'Using class.*has failed to implement',
+                'Does not declaratively implement',
+                'thing attribute was not provided'
+        ):
+            assert_that(calling(assert_that).with_args(self, matchers.validly_provides(IThing)),
+                        raises(AssertionError, line))
 
         broken_thing = Thing()
         broken_thing.thing = "not an int"
