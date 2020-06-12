@@ -17,10 +17,6 @@ except ImportError:
 import pprint
 
 import six
-from zope import interface
-from zope.interface.exceptions import BrokenImplementation
-from zope.interface.exceptions import BrokenMethodImplementation
-from zope.interface.exceptions import DoesNotImplement
 from zope.interface.exceptions import Invalid
 from zope.interface.verify import verifyObject
 from zope.schema import ValidationError
@@ -108,25 +104,27 @@ class VerifyProvides(BaseMatcher):
             return True
 
     def describe_to(self, description):
-        description.append_text('object verifiably providing ').append(str(self.iface.__name__))
+        description.append_text('object verifiably providing ').append_description_of(self.iface)
 
     def describe_mismatch(self, item, mismatch_description):
-        x = None
         md = mismatch_description
-        md.append_text(str(type(item)))
+
         try:
             verifyObject(self.iface, item)
-        except BrokenMethodImplementation as x:
-            md.append_text(str(x).replace('\n', ''))
-        except BrokenImplementation as x:
-            md.append_text(' failed to provide attribute "')
-            md.append_text(x.name).append_text('"').append_text(' from ')
-            md.append_text(self.iface[x.name].interface.getName())
-        except DoesNotImplement as x:
-            md.append_text(" does not implement the interface; it does implement ")
-            md.append_text(str(list(interface.providedBy(item))))
-        except Invalid as x: # pragma: no cover
-            md.append_text(str(x).replace('\n', ''))
+        except Invalid as x:
+            # Beginning in zope.interface 5, the Invalid exception subclasses
+            # like BrokenImplementation, DoesNotImplement, etc, all typically
+            # have a much nicer error message than they used to, better than we
+            # were producing. This is especially true now that MultipleInvalid
+            # is a thing.
+            x = str(x).strip()
+
+            md.append_text("Using class ").append_description_of(type(item)).append_text(' ')
+            if x.startswith('The object '):
+                x = x[len("The object "):]
+                x = 'the object ' + x
+            x = x.replace('\n    ', '\n          ')
+            md.append_text(x)
 
 
 def verifiably_provides(*ifaces):
@@ -172,7 +170,7 @@ class VerifyValidSchema(BaseMatcher):
                 md.append_text(repr(exc))
                 md.append_text('"\n\t ')
             except Invalid as x: # pragma: no cover
-                md.append_text(str(x).replace('\n', ''))
+                md.append_text(str(x))
 
 def validly_provides(*ifaces):
     """
@@ -202,8 +200,8 @@ class Implements(BaseMatcher):
         return self.iface.implementedBy(item)
 
     def describe_to(self, description):
-        description.append_text('object implementing') \
-                                 .append(self.iface)
+        description.append_text('object implementing')
+        description.append_description_of(self.iface)
 
 def implements(iface):
     """
@@ -229,7 +227,7 @@ class ValidatedBy(BaseMatcher):
             return True
 
     def describe_to(self, description):
-        description.append_text('data validated by').append(repr(self.field))
+        description.append_text('data validated by').append_description_of(self.field)
 
     def describe_mismatch(self, item, mismatch_description):
         ex = None
@@ -238,11 +236,11 @@ class ValidatedBy(BaseMatcher):
         except self.invalid as e:
             ex = e
 
-        mismatch_description.append_text(repr(self.field))
+        mismatch_description.append_description_of(self.field)
         mismatch_description.append_text(' failed to validate ')
-        mismatch_description.append_text(repr(item))
+        mismatch_description.append_description_of(item)
         mismatch_description.append_text(' with ')
-        mismatch_description.append_text(repr(ex))
+        mismatch_description.append_description_of(ex)
 
 def validated_by(field, invalid=Invalid):
     """
