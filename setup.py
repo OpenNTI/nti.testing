@@ -62,6 +62,7 @@ setup(
         'zope.component',
         'zope.configuration',
         'zope.dottedname',
+        'zope.exceptions',
         'zope.schema', # schema validation
         'zope.testing',
     ],

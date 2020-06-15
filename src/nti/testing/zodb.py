@@ -10,11 +10,16 @@ from __future__ import division
 from __future__ import print_function
 
 import sys
-import traceback
 
 import transaction
 from transaction.interfaces import NoTransaction
 
+from zope.exceptions import print_exception
+from zope.exceptions import format_exception
+
+__all__ = [
+    'mock_db_trans',
+]
 
 # The exceptions are not expected to be caught. They indicate errors
 # to fix.
@@ -23,8 +28,7 @@ class _BaseException(Exception):
     def __init__(self, t, v, tb):
         msg = self.default_message
         if t:
-            # TODO: Render with zope.exceptions so we get __traceback_info__
-            msg = ''.join(traceback.format_exception(t, v, tb))
+            msg = ''.join(format_exception(t, v, tb))
         Exception.__init__(self, msg)
 
 class _TransactionManagerModeChanged(_BaseException):
@@ -57,6 +61,10 @@ class mock_db_trans(object):
 
     #: The connection that was opened. Valid after entering and before exiting.
     conn = None
+
+    #: The file to which unexpected exceptions that cannot be raised are printed.
+    #: If `None`, exceptions will be written to `sys.stderr`
+    exc_file = None
 
     def __init__(self, db):
         """
@@ -110,13 +118,17 @@ class mock_db_trans(object):
             tx.abort() # idempotent with transaction 3
             raise
 
+    def _report_exception(self, msg, t, v, tb):
+        f = self.exc_file or sys.stderr
+        print(msg, file=f)
+        print_exception(t, v, tb, file=f, with_filenames=False)
+
     def _close_connection(self, conn, ignore_errors):
         catch = Exception if ignore_errors else ()
         try:
             conn.close()
         except catch:
-            traceback.print_exc()
-
+            self._report_exception("Unexpected error closing connection; ignored.", *sys.exc_info())
 
     def __exit__(self, t, v, tb):
         # Returning a True value from __exit__ suppresses any
@@ -148,8 +160,10 @@ class mock_db_trans(object):
                 # but let the finally block know not to shadow it.
                 body_raised = True
                 raise
-            print("Failed to cleanup trans, but body raised exception too", file=sys.stderr)
-            traceback.print_exc()
+            self._report_exception(
+                "Failed to cleanup trans, but body raised exception too. "
+                "This exception will be ignored.",
+                *sys.exc_info())
             # So let the body exception propagate
         finally:
             txm.explicit = self.__txm_was_explicit
