@@ -222,7 +222,7 @@ def implements(iface):
     Matches if the object implements (is a factory for) the given
     interface.
 
-    .. seealso:: `zope.interface.Interface.implementedBy`
+    .. seealso:: :meth:`zope.interface.interfaces.ISpecification.implementedBy`
     """
     return Implements(iface)
 
@@ -267,7 +267,7 @@ def validated_by(field, invalid=Invalid):
 
     .. versionchanged:: 2.0.1
        Add ``invalid`` and change it from ``Exception`` to
-       :class:`zope.interface.exceptions.Invalid`
+       :class:`zope.interface.interfaces.Invalid`
     """
     return ValidatedBy(field, invalid=invalid)
 
@@ -280,7 +280,7 @@ def not_validated_by(field, invalid=Invalid):
 
     .. versionchanged:: 2.0.1
        Add ``invalid`` and change it from ``Exception`` to
-       :class:`zope.interface.exceptions.Invalid`
+       :class:`zope.interface.interfaces.Invalid`
     """
     return is_not(validated_by(field, invalid=invalid))
 
