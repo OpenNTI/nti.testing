@@ -233,3 +233,8 @@ a ``granularity`` argument::
   ...     assert t2 == t1 + 0.1, (t2, t1)
 
   >>> test()
+
+And The Rest
+============
+
+There are some other assorted utilities. See the API documentation for details.

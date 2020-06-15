@@ -13,7 +13,6 @@ TESTS_REQUIRE = [
     'Acquisition',
     'zope.site',
     'zope.testrunner',
-    'ZODB',
 ]
 
 def _read(fname):
@@ -54,6 +53,7 @@ setup(
     package_dir={'': 'src'},
     namespace_packages=['nti'],
     install_requires=[
+        'ZODB >= 5.6.0',
         'zope.interface >= 5.1', # Error messages changed.
         'pyhamcrest',
         'six',
@@ -62,6 +62,7 @@ setup(
         'zope.component',
         'zope.configuration',
         'zope.dottedname',
+        'zope.exceptions',
         'zope.schema', # schema validation
         'zope.testing',
     ],
