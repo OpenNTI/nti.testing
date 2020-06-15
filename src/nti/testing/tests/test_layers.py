@@ -33,32 +33,24 @@ class TestLayers(unittest.TestCase):
 
         via_test(self)
 
+    def _check_methods(self, layer, extra_methods=()):
+        default_methods = ('setUp', 'tearDown', 'testSetUp', 'testTearDown')
+        for meth in default_methods + extra_methods:
+            getattr(layer, meth)()
+
     def test_gc(self):
 
         gcm = layers.GCLayerMixin()
-
-        for meth in 'setUp', 'tearDown', 'testSetUp', 'testTearDown', 'setUpGC', 'tearDownGC':
-            getattr(gcm, meth)()
+        self._check_methods(gcm, ('setUpGC', 'tearDownGC'))
 
     def test_shared_cleanup(self):
-
-        gcm = layers.SharedCleanupLayer()
-
-        for meth in 'setUp', 'tearDown', 'testSetUp', 'testTearDown':
-            getattr(gcm, meth)()
+        self._check_methods(layers.SharedCleanupLayer)
 
     def test_zcl(self):
-
-        gcm = layers.ZopeComponentLayer()
-
-        for meth in 'setUp', 'tearDown', 'testSetUp', 'testTearDown':
-            getattr(gcm, meth)()
+        self._check_methods(layers.ZopeComponentLayer)
 
     def test_configuring_layer_mixin(self):
-
         class Layer(layers.ConfiguringLayerMixin):
             set_up_packages = ('zope.component',)
 
-        for meth in ('setUp', 'tearDown', 'testSetUp', 'testTearDown',
-                     'setUpPackages', 'tearDownPackages'):
-            getattr(Layer, meth)()
+        self._check_methods(Layer, ('setUpPackages', 'tearDownPackages'))

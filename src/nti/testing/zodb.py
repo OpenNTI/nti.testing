@@ -9,7 +9,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import gc
 import sys
+
 
 import transaction
 from transaction.interfaces import NoTransaction
@@ -23,9 +25,12 @@ from zope.exceptions import format_exception
 
 from .layers import ZopeComponentLayer
 
+PYPY = hasattr(sys, 'pypy_version_info')
+
 __all__ = [
     'mock_db_trans',
     'ZODBLayer',
+    'reset_db_caches',
 ]
 
 # The exceptions are not expected to be caught. They indicate errors
@@ -183,11 +188,26 @@ class mock_db_trans(object):
 
 
 
-def reset_db_caches(db=None):
+def reset_db_caches(db=None, collect=False):
+    """
+    Minimize the caches of all connections found in the *db*.
+
+    If the *db* is not given, then the one from the :class:`ZODBLayer`
+    is used.
+
+    On PyPy, or if *collect* is true, this will invoke
+    :func:`gc.collect` to help remove any weak references to objects
+    that were ejected from the cache.
+    """
+    result = -1
+    if db is None:
+        db = ZODBLayer.db
     if db is not None:
         for conn in db.pool:
             conn.cacheMinimize()
-
+        if PYPY or collect:
+            result = gc.collect()
+    return result
 
 class ZODBLayer(ZopeComponentLayer):
     """
