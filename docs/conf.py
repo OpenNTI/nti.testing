@@ -165,9 +165,13 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'http://docs.python.org/': None,
-    'http://zopecomponent.readthedocs.io/en/latest': None,
-    'http://zopeconfiguration.readthedocs.io/en/latest': None,
+    'https://docs.python.org/': None,
+    'https://zopecomponent.readthedocs.io/en/latest': None,
+    'https://zopeconfiguration.readthedocs.io/en/latest': None,
+    'https://zopeexceptions.readthedocs.io/en/latest': None,
+    'https://zopeschema.readthedocs.io/en/latest': None,
+    'https://zopeinterface.readthedocs.io/en/latest': None,
+    'https://zodb-docs.readthedocs.io/en/latest': None,
 }
 
 extlinks = {
@@ -176,6 +180,12 @@ extlinks = {
     'pr': ('https://github.com/NextThought/nti.testing/pull/%s',
            'pull request #')}
 
-autodoc_default_flags = ['members', 'show-inheritance']
+# Sphinx 1.8+ prefers this to `autodoc_default_flags`. It's documented that
+# either True or None mean the same thing as just setting the flag, but
+# only None works in 1.8 (True works in 2.0)
+autodoc_default_options = {
+    'members': None,
+    'show-inheritance': None,
+}
+autodoc_member_order = 'groupwise'
 autoclass_content = 'both'
-autodoc_member_order = 'bysource'

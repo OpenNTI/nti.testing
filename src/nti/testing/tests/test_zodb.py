@@ -248,3 +248,26 @@ class TestMockDBTrans(unittest.TestCase):
         self.assertIsNone(my_mock.conn)
         # The transaction that was opened is cleaned up
         self.assertTrue(my_mock.aborted)
+
+
+class TestZODBLayer(unittest.TestCase):
+
+    layer = zodb.ZODBLayer
+
+    def test_registration(self):
+        from ZODB.interfaces import IDatabase
+        from zope import component
+        gsm = component.getGlobalSiteManager()
+        reg_db = gsm.getUtility(IDatabase)
+        self.assertIsNotNone(reg_db)
+        self.assertIs(reg_db, self.layer.db)
+
+    def test_premature_teardown(self):
+        self.layer.tearDown()
+        from ZODB.interfaces import IDatabase
+        from zope import component
+        gsm = component.getGlobalSiteManager()
+        reg_db = gsm.queryUtility(IDatabase)
+        self.assertIsNone(reg_db)
+
+        self.layer.setUp()

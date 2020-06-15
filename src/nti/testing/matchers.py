@@ -34,6 +34,20 @@ from hamcrest.library.collection.is_empty import empty
 
 __docformat__ = "restructuredtext en"
 
+__all__ = [
+    'has_length',
+    'has_attr',
+    'is_true',
+    'is_false',
+    'provides',
+    'verifiably_provides',
+    'validly_provides',
+    'implements',
+    'validated_by',
+    'not_validated_by',
+    'aq_inContextOf',
+    'TypeCheckedDict',
+]
 
 has_length = has_length # Export
 is_empty = empty # bwc
@@ -130,7 +144,7 @@ class VerifyProvides(BaseMatcher):
 def verifiably_provides(*ifaces):
     """
     Matches if the object verifiably provides the correct interface(s),
-    as defined by ``zope.interface``. This means having the right attributes
+    as defined by :func:`zope.interface.verify.verifyObject`. This means having the right attributes
     and methods with the right signatures.
 
     .. note:: This does **not** test schema compliance. For that
@@ -177,9 +191,9 @@ def validly_provides(*ifaces):
     Matches if the object verifiably and validly provides the given
     schema (interface(s)).
 
-    Verification is done with zope.interface and
+    Verification is done with :mod:`zope.interface` and
     :func:`verifiably_provides`, while validation is done with
-    zope.schema's ``getValidationErrors`` function.
+    :func:`zope.schema.getValidationErrors`.
     """
     if len(ifaces) == 1:
         the_schema = ifaces[0]
@@ -207,6 +221,8 @@ def implements(iface):
     """
     Matches if the object implements (is a factory for) the given
     interface.
+
+    .. seealso:: `zope.interface.Interface.implementedBy`
     """
     return Implements(iface)
 

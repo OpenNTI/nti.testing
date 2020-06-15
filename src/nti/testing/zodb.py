@@ -14,11 +14,18 @@ import sys
 import transaction
 from transaction.interfaces import NoTransaction
 
+import ZODB
+from ZODB.interfaces import IDatabase
+from ZODB.DemoStorage import DemoStorage
+from zope import component
 from zope.exceptions import print_exception
 from zope.exceptions import format_exception
 
+from .layers import ZopeComponentLayer
+
 __all__ = [
     'mock_db_trans',
+    'ZODBLayer',
 ]
 
 # The exceptions are not expected to be caught. They indicate errors
@@ -66,11 +73,12 @@ class mock_db_trans(object):
     #: If `None`, exceptions will be written to `sys.stderr`
     exc_file = None
 
-    def __init__(self, db):
+    def __init__(self, db=None):
         """
-        :param db: The :class:`ZODB.DB` to open.
+        :param db: The :class:`ZODB.DB` to open. If none is given,
+            then the :attr:`ZODBLayer.db` will be used.
         """
-        self.db = db
+        self.db = db if db is not None else ZODBLayer.db
         self.__txm_was_explicit = None
         self.__current_transaction = None
 
@@ -179,3 +187,39 @@ def reset_db_caches(db=None):
     if db is not None:
         for conn in db.pool:
             conn.cacheMinimize()
+
+
+class ZODBLayer(ZopeComponentLayer):
+    """
+    Test layer that creates a ZODB database using
+    :class:`ZODB.DemoStorage.DemoStorage` and registers it as the
+    no-name :class:`ZODB.interfaces.IDatabase` in the global component
+    registry. It is also available in the :attr:`db` attribute of this
+    object.
+    """
+
+    #: The DB that was created.
+    db = None
+
+    @classmethod
+    def setUp(cls):
+        db = cls.db = ZODB.DB(DemoStorage())
+        component.getGlobalSiteManager().registerUtility(db, IDatabase)
+
+    @classmethod
+    def tearDown(cls):
+        db = cls.db
+        cls.db = None
+        if db is not None:
+            db.close()
+            reg_db = component.getGlobalSiteManager().queryUtility(IDatabase)
+            if reg_db is db:
+                component.getGlobalSiteManager().unregisterUtility(db, IDatabase)
+
+    @classmethod
+    def testSetUp(cls):
+        pass
+
+    @classmethod
+    def testTearDown(cls):
+        pass
