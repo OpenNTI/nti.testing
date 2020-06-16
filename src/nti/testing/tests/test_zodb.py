@@ -8,10 +8,12 @@ from __future__ import division
 from __future__ import print_function
 
 import io
+import gc
 import unittest
 
 import transaction
 from transaction.interfaces import NoTransaction
+from zope import interface
 from nti.testing import zodb
 
 # pylint:disable=protected-access,pointless-string-statement
@@ -271,3 +273,53 @@ class TestZODBLayer(unittest.TestCase):
         self.assertIsNone(reg_db)
 
         self.layer.setUp()
+
+
+class IExtra(interface.Interface): # pylint:disable=inherit-non-class
+    "An extra interface"
+
+class IExtra2(interface.Interface): # pylint:disable=inherit-non-class
+    "Another extra interface"
+
+class Object(object):
+
+    def __init__(self, *args):
+        pass
+
+class TestResetDbCaches(unittest.TestCase):
+    layer = zodb.ZODBLayer
+
+    def setUp(self):
+        super(TestResetDbCaches, self).setUp()
+        gc.disable()
+
+    def tearDown(self):
+        gc.enable()
+        super(TestResetDbCaches, self).tearDown()
+
+    def test_persistent_site_closed(self):
+        from zope.site.site import LocalSiteManager
+        from ZODB import DB
+        from ZODB.DemoStorage import DemoStorage
+
+        interface.classImplements(LocalSiteManager, IExtra)
+
+        db = DB(DemoStorage())
+        transaction.begin()
+        conn = db.open()
+        site_man = LocalSiteManager(None)
+        conn.root()[0] = site_man
+        site_man.registerAdapter(Object, [IExtra], IExtra2)
+        site_man.getAdapter(LocalSiteManager(None), IExtra2)
+        transaction.commit()
+        conn.close()
+
+        zodb.reset_db_caches(db)
+        IExtra.changed(None) # pylint:disable=no-value-for-parameter
+
+    def test_arguments(self):
+        # Don't pass the DB, let it get the one from the layer.
+        # But do ask for collect, so we get something non-negative on
+        # all platforms.
+        collected = zodb.reset_db_caches(collect=True)
+        self.assertNotEqual(collected, -1)
