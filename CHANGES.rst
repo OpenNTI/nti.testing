@@ -11,7 +11,8 @@
 - Require zope.interface 5.1. This lets the interface matchers produce
   much more informative error messages.
 
-- Add ``nti.testing.zodb`` with helpers for dealing with ZODB.
+- Add ``nti.testing.zodb`` with helpers for dealing with ZODB. This
+  makes ZODB 5.6 or above a required dependency.
 
 2.2.1 (2019-09-10)
 ==================
