@@ -2,13 +2,19 @@
  Changes
 =========
 
-
 3.1.0 (unreleased)
 ==================
 
 - Add support for Python 3.9.
 
 - Drop support for Python 3.5.
+
+- Add the module alias ``nti.testing.mock``, which is either the
+  standard library ``unittest.mock``, or the backport ``mock``. This
+  allows easy imports when backwards compatibility matters.
+
+- Make ``mock``, ``mock.Mock`` and various other API attributes,
+  like ``is_true``, available directly from the ``nti.testing`` namespace.
 
 3.0.0 (2020-06-16)
 ==================

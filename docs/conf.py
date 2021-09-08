@@ -190,5 +190,5 @@ autodoc_default_options = {
     'members': None,
     'show-inheritance': None,
 }
-autodoc_member_order = 'groupwise'
+#autodoc_member_order = 'groupwise'
 autoclass_content = 'both'
