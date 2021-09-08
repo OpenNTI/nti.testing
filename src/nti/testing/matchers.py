@@ -11,9 +11,9 @@ from __future__ import print_function
 # stdlib imports
 try:
     from collections.abc import Sequence, Mapping
-except ImportError:
+except ImportError: # pragma: no cover
     # Python 2
-    from collections import Sequence, Mapping
+    from collections import Sequence, Mapping # pylint:disable=deprecated-class
 import pprint
 
 import six
@@ -49,7 +49,6 @@ __all__ = [
     'TypeCheckedDict',
 ]
 
-has_length = has_length # Export
 is_empty = empty # bwc
 
 has_attr = hamcrest.library.has_property
@@ -314,10 +313,10 @@ def aq_inContextOf(parent):
 
 # Patch hamcrest for better descriptions of maps (json data)
 # and sequences
-if six.PY3: # pragma: no cover
+if six.PY3:
     from io import StringIO
-else:
-    from cStringIO import StringIO
+else: # pragma: no cover
+    from cStringIO import StringIO # pylint:disable=import-error
 
 _orig_append_description_of = BaseDescription.append_description_of
 def _append_description_of_map(self, value):

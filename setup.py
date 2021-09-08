@@ -39,10 +39,10 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Testing',
@@ -54,7 +54,8 @@ setup(
     namespace_packages=['nti'],
     install_requires=[
         'ZODB >= 5.6.0',
-        'zope.interface >= 5.1', # Error messages changed.
+        # Error messages changed in 5.1, reprs changed <= 5.4
+        'zope.interface >= 5.4.0',
         'pyhamcrest',
         'six',
         'setuptools',

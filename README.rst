@@ -10,8 +10,9 @@
         :target: https://pypi.org/project/nti.testing/
         :alt: Supported Python versions
 
-.. image:: https://travis-ci.org/NextThought/nti.testing.svg?branch=master
-        :target: https://travis-ci.org/NextThought/nti.testing
+.. image:: https://github.com/NextThought/nti.testing/actions/workflows/tests.yml/badge.svg
+        :target: https://github.com/NextThought/nti.testing/actions/workflows/tests.yml
+        :alt: Test Status
 
 .. image:: https://coveralls.io/repos/github/NextThought/nti.testing/badge.svg
         :target: https://coveralls.io/github/NextThought/nti.testing
@@ -97,8 +98,8 @@ specified by the interface are present as described::
   Traceback (most recent call last):
   ...
   AssertionError:...
-  Expected: object verifiably providing <InterfaceClass ...IThings>
-       but: Using class <class 'Thing'> the object <object Thing> has failed to implement interface <InterfaceClass ....IThings>: The ....IThings.got_that_thing_i_sent_you attribute was not provided.
+  Expected: object verifiably providing <...IThings>
+       but: Using class <class 'Thing'> the object <object Thing> has failed to implement interface ....IThings: The ....IThings.got_that_thing_i_sent_you attribute was not provided.
   <BLANKLINE>
 
 If multiple attributes or methods are not provided, all such missing
@@ -114,8 +115,8 @@ information is reported::
   Traceback (most recent call last):
   ...
   AssertionError:...
-  Expected: object verifiably providing <InterfaceClass ...IThingReceiver>
-       but: Using class <class 'ThingReceiver'> the object <object ThingReceiver> has failed to implement interface <InterfaceClass ....IThingReceiver>:
+  Expected: object verifiably providing <...IThingReceiver>
+       but: Using class <class 'ThingReceiver'> the object <object ThingReceiver> has failed to implement interface ....IThingReceiver:
             The ....IThings.got_that_thing_i_sent_you attribute was not provided
             The ....IThingReceiver.receive(some_thing) attribute was not provided
   <BLANKLINE>
@@ -127,7 +128,7 @@ values of the attributes, we can step up to ``zope.schema`` and the
 
   >>> from zope.schema import Bool
   >>> class IBoolThings(IThing1, IThing2):
-  ...     got_that_thing_i_sent_you = Bool()
+  ...     got_that_thing_i_sent_you = Bool(required=True)
   >>> @implementer(IBoolThings)
   ... class BoolThing(object):
   ...     def __repr__(self): return "<object BoolThing>"
@@ -140,8 +141,8 @@ values of the attributes, we can step up to ``zope.schema`` and the
   Traceback (most recent call last):
   ...
   AssertionError:...
-  Expected: (object verifiably providing <InterfaceClass ...IBoolThings> and object validly providing <InterfaceClass ....IBoolThings>)
-       but: object verifiably providing <InterfaceClass ....IBoolThings> Using class <class 'BoolThing'> the object <object BoolThing> has failed to implement interface <InterfaceClass ....IBoolThings>: The ....IBoolThings.got_that_thing_i_sent_you attribute was not provided.
+  Expected: (object verifiably providing <...IBoolThings> and object validly providing ....IBoolThings)
+       but: object verifiably providing <....IBoolThings> Using class <class 'BoolThing'> the object <object BoolThing> has failed to implement interface ....IBoolThings: The ....IBoolThings.got_that_thing_i_sent_you attribute was not provided.
   <BLANKLINE>
 
 For finer grained control, we can compare data against schema fields::
