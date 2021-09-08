@@ -1,15 +1,13 @@
+.. currentmodule:: nti.testing
+
 
 .. include:: ../README.rst
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
-   base
-   layers
-   matchers
-   time
-   zodb
+   api
    changelog
 
 

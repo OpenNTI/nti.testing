@@ -283,13 +283,15 @@ def not_validated_by(field, invalid=Invalid):
     """
     return is_not(validated_by(field, invalid=invalid))
 
+def _aq_inContextOf_NotImplemented(child, parent):
+    return False
 
 try:
     from Acquisition import aq_inContextOf as _aq_inContextOf
 except ImportError: # pragma: no cover
     # acquisition not installed
-    def _aq_inContextOf(child, parent):
-        return False
+    _aq_inContextOf = _aq_inContextOf_NotImplemented
+
 
 class AqInContextOf(BaseMatcher):
     def __init__(self, parent):
@@ -302,7 +304,28 @@ class AqInContextOf(BaseMatcher):
         return _aq_inContextOf(item, self.parent) # not wrapped, but maybe __parent__ chain
 
     def describe_to(self, description):
-        description.append_text('object in context of').append(repr(self.parent))
+        description.append_text('object in context of ')
+        description.append_description_of(self.parent)
+
+    def describe_mismatch(self, item, mismatch_description):
+        if _aq_inContextOf is _aq_inContextOf_NotImplemented:
+            mismatch_description.append_text('Acquisition was not installed.')
+            return
+
+        mismatch_description.append_description_of(item)
+        mismatch_description.append_text(' was not in the context of ')
+        mismatch_description.append_description_of(self.parent)
+        mismatch_description.append_text('; its lineage is ')
+        lineage = []
+        while item is not None:
+            try:
+                item = item.__parent__
+            except AttributeError:
+                item = None
+            if item is not None:
+                lineage.append(item)
+        mismatch_description.append_description_of(lineage)
+
 
 def aq_inContextOf(parent):
     """

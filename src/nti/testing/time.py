@@ -15,13 +15,9 @@ import time
 from time import time as _real_time
 from time import gmtime as _real_gmtime
 
-try:
-    from unittest import mock
-except ImportError: # pragma: no cover
-    # Python 2
-    import mock
-
 import six
+
+from nti.testing.mock import Mock
 
 __docformat__ = "restructuredtext en"
 
@@ -33,8 +29,8 @@ class _TimeWrapper(object):
     def __init__(self, granularity=1.0):
         self._granularity = granularity
         self._lock = Lock()
-        self.fake_gmtime = mock.Mock()
-        self.fake_time = mock.Mock()
+        self.fake_gmtime = Mock()
+        self.fake_time = Mock()
         self._configure_fakes()
 
     def _configure_fakes(self):
@@ -118,6 +114,8 @@ def time_monotonically_increases(func_or_granularity):
             t1 = time.time()
             t2 = time.time()
             assrt t2 == t1 + 0.1
+
+    .. seealso:: `nti.testing.time.reset_monotonic_time`
 
     .. versionchanged:: 2.1
        Add support for ``time.gmtime``.

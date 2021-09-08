@@ -11,17 +11,17 @@ from __future__ import print_function
 # stdlib imports
 import unittest
 
-from nti.testing import matchers
-
 from hamcrest import assert_that
 from hamcrest import calling
 
 from hamcrest import raises
 
+from nti.testing import matchers
+
 __docformat__ = "restructuredtext en"
 
 
-#pylint:disable=inherit-non-class
+# pylint:disable=inherit-non-class,redundant-u-string-prefix
 
 
 class TestMatchers(unittest.TestCase):
@@ -187,16 +187,51 @@ class TestMatchers(unittest.TestCase):
     def test_in_context(self):
         # pylint:disable=attribute-defined-outside-init
         class Thing(object):
-            pass
+            def __init__(self, name, parent=None):
+                self.__name__ = name
+                if parent:
+                    self.__parent__ = parent
+            def __repr__(self):
+                return '<Thing %s>' % (self.__name__,)
 
-        parent = Thing()
-        child = Thing()
-        child.__parent__ = parent
+        parent = Thing('parent')
+        child = Thing('child', parent)
+        sibling = Thing('sibling', parent)
 
         assert_that(child, matchers.aq_inContextOf(parent))
-        assert_that(calling(assert_that).with_args(parent, matchers.aq_inContextOf(self)),
-                    raises(AssertionError, "object in context of"))
+
+        with self.assertRaises(AssertionError) as exc:
+            assert_that(parent, matchers.aq_inContextOf('ROOT'))
+        ex = str(exc.exception)
+        del exc
+        self.assertIn('object in context of', ex)
+        self.assertIn('<Thing parent> was not in the context of \'ROOT\'\n; its lineage is []', ex)
+
+        with self.assertRaises(AssertionError) as exc:
+            assert_that(sibling, matchers.aq_inContextOf(child))
+        ex = str(exc.exception)
+        del exc
+        self.assertIn('object in context of', ex)
+        self.assertIn('<Thing sibling> was not in the context of <Thing child>', ex)
+        self.assertIn('its lineage is [<Thing parent>]', ex)
+
 
         # fake wrapper
         child.aq_inContextOf = lambda thing: thing == child.__parent__
         assert_that(child, matchers.aq_inContextOf(parent))
+
+    def test_in_context_no_Acquisition(self):
+        # pylint:disable=protected-access
+        orig_in_context = matchers._aq_inContextOf
+        matchers._aq_inContextOf = matchers._aq_inContextOf_NotImplemented
+        try:
+            with self.assertRaises(AssertionError) as exc:
+                assert_that(self, matchers.aq_inContextOf(self))
+
+        finally:
+            matchers._aq_inContextOf = orig_in_context
+
+        ex = str(exc.exception)
+        del exc
+        self.assertIn('object in context of', ex)
+        self.assertIn('Acquisition was not installed', ex)
