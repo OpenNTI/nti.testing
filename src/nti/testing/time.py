@@ -17,7 +17,8 @@ from time import gmtime as _real_gmtime
 
 try:
     from unittest import mock
-except ImportError:
+except ImportError: # pragma: no cover
+    # Python 2
     import mock
 
 import six

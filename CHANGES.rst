@@ -3,11 +3,12 @@
 =========
 
 
-3.0.1 (unreleased)
+3.1.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for Python 3.9.
 
+- Drop support for Python 3.5.
 
 3.0.0 (2020-06-16)
 ==================
@@ -45,12 +46,15 @@
 
 - Make ``Acquisition`` an optional dependency. If it is not installed,
   the ``aq_inContextOf`` matcher will always return False.
+
 - Remove dependency on ``fudge``. Instead, we now use ``unittest.mock`` on
   Python 3, or its backport ``mock`` on Python 2. See `issue 11
   <https://github.com/NextThought/nti.testing/issues/11>`_.
+
 - Refactor ZCML configuration support to share more code and
   documentation. See `issue 10
   <https://github.com/NextThought/nti.testing/issues/10>`_.
+
 - The layer ``ConfiguringLayerMixin`` and the base class
   ``SharedConfiguringTestBase`` now default to running
   configuration in the package the subclass is defined in, just as
@@ -75,7 +79,9 @@
 ==================
 
 - Add support for Python 3.6.
+
 - Remove ``unicode_literals``.
+
 - Substantially rework ``time_monotonically_increases`` for greater
   safety. Fixes `issue 5 <https://github.com/NextThought/nti.testing/issues/5>`_.
 
@@ -83,4 +89,5 @@
 ==================
 
 - Add Python 3 support.
+
 - Initial PyPI release.
