@@ -28,7 +28,7 @@ setup(
     long_description=_read('README.rst') + '\n\n' + _read('CHANGES.rst'),
     license='Apache',
     keywords='nose2 testing zope3 ZTK hamcrest',
-    url='https://github.com/NextThought/nti.testing',
+    url='https://github.com/OpenNTI/nti.testing',
     project_urls={
         'Documentation': 'https://ntitesting.readthedocs.io/en/latest/',
     },
@@ -36,6 +36,7 @@ setup(
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Operating System :: OS Independent',
+        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
