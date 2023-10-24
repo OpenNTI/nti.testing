@@ -12,6 +12,10 @@ recursive-include src *.txt
 recursive-include src *.py
 
 include *.txt
+include *.yml
 include .isort.cfg
+include .pylintrc
+include .readthedocs.yml
 recursive-include docs *.py
 recursive-include docs *.rst
+recursive-include docs *.css
