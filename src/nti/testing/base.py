@@ -17,6 +17,7 @@ import os
 import platform
 import sys
 import unittest
+from unittest.mock import patch as Patch
 
 import six
 from six import with_metaclass
@@ -100,7 +101,7 @@ class AbstractConfiguringObject(object):
                                set_up_packages=(),
                                features=(),
                                context=_marker,
-                               configure_events=True, # unused
+                               configure_events=True, # pylint:disable=unused-argument
                                package=None):
         obj.configuration_context = _configure(
             obj,
@@ -164,6 +165,31 @@ class AbstractTestBase(zope.testing.cleanup.CleanUp, unittest.TestCase):
         See :meth:`AbstractConfiguringObject.get_configuration_package_for_class`.
         """
         return AbstractConfiguringObject.get_configuration_package_for_class(self.__class__)
+
+    def patch(self, *args, **kwargs):
+        """
+        API for subclasses. All args are passed through to :obj:`unittest.mock.patch`
+        which is then started and registered for cleanup.
+
+        This is intended to be used in ``setUp`` or individual test methods
+        when what you might need to patch is dynamic.
+
+        Returns the result of ``patch.start()``, i.e., a mock object.
+
+        .. versionadded:: NEXT
+        """
+        return self._install_patch(Patch(*args, **kwargs))
+
+    def _install_patch(self, patcher):
+        """
+        Starts the *patcher*, and registers a test tear down cleanup
+        to stop it.
+
+        Returns the result of ``patcher.start``
+        """
+        result = patcher.start()
+        self.addCleanup(patcher.stop)
+        return result
 
 _shared_cleanups = []
 
@@ -362,7 +388,7 @@ class ConfiguringTestBase(AbstractConfiguringObject,
     """
 
     def _doSetUpSuper(self):
-        super(ConfiguringTestBase, self).setUp()
+        super().setUp()
 
     setUp = AbstractConfiguringObject._doSetUp
 
@@ -381,7 +407,7 @@ class ConfiguringTestBase(AbstractConfiguringObject,
         return self.configuration_context
 
     def _doTearDownSuper(self):
-        super(ConfiguringTestBase, self).tearDown()
+        super().tearDown()
 
     tearDown = AbstractConfiguringObject._doTearDown
 
@@ -425,7 +451,7 @@ class SharedConfiguringTestBase(AbstractConfiguringObject,
         AbstractConfiguringObject._doTearDown(
             self,
             clear_configuration_context=False,
-            super_tear_down=super(SharedConfiguringTestBase, self).tearDown)
+            super_tear_down=super().tearDown)
 
 
 def module_setup(set_up_packages=(),
