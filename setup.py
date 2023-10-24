@@ -14,6 +14,7 @@ TESTS_REQUIRE = [
     'zope.site',
     'zope.testrunner',
     'testgres',
+    'psycopg2-binary; python_implementation != "PyPy"',
 ]
 
 def _read(fname):

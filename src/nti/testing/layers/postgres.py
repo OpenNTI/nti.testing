@@ -10,6 +10,8 @@ later examination.
 
 The APIs are preliminary and may change.
 
+This is only supported on platforms that can install ``psycopg2``.
+
 """
 from contextlib import contextmanager
 import functools
@@ -18,9 +20,23 @@ import sys
 import unittest
 from unittest.mock import patch
 
-import psycopg2
-import psycopg2.extras
-import psycopg2.pool
+#import psycopg2
+#import psycopg2.extras
+#import psycopg2.pool
+
+try:
+    from psycopg2 import ProgrammingError
+except ImportError:
+    ThreadedConnectionPool = None
+    DictCursor = None
+    class IntegrityError(Exception):
+        """Never thrown"""
+    ProgrammingError = InternalError = IntegrityError
+else:
+    from psycopg2.pool import ThreadedConnectionPool
+    from psycopg2.extras import DictCursor
+    from psycopg2 import IntegrityError
+    from psycopg2 import InternalError
 
 import testgres
 
@@ -50,11 +66,11 @@ if 'NTI_SAVE_DB' in os.environ:
     # NTI_SAVE_DB is either 1/on/true (case-insensitive)
     # or a file name.
     val = os.environ['NTI_SAVE_DB']
-    if val.lower() in ('0', 'off', 'false', 'no'):
+    if val.lower() in {'0', 'off', 'false', 'no'}:
         SAVE_DATABASE_ON_TEARDOWN = False
     else:
         SAVE_DATABASE_ON_TEARDOWN = True
-        if val.lower() not in ('1', 'on', 'true', 'yes'):
+        if val.lower() not in {'1', 'on', 'true', 'yes'}:
             SAVE_DATABASE_FILENAME = val
 
 
@@ -117,7 +133,7 @@ class DatabaseLayer(object):
     connection_pool = None
 
 
-    connection_pool_klass = psycopg2.pool.ThreadedConnectionPool
+    connection_pool_klass = ThreadedConnectionPool
     connection_pool_minconn = 1
     connection_pool_maxconn = 51
 
@@ -195,7 +211,7 @@ class DatabaseLayer(object):
             dbname=cls.DATABASE_NAME,
             host='localhost',
             port=cls.postgres_node.port,
-            cursor_factory=psycopg2.extras.DictCursor
+            cursor_factory=DictCursor,
         )
 
         cls.postgres_dsn = "host=%s dbname=%s port=%s" %  (
@@ -271,14 +287,14 @@ class DatabaseLayer(object):
 
     @classmethod
     def truncate_table(cls, conn, table_name):
-        "Transactionally truncate the given *table_name* using *conn*"
+        """Transactionally truncate the given *table_name* using *conn*"""
         try:
 
             with conn.cursor() as cur:
                 cur.execute(
                     'TRUNCATE TABLE ' + table_name + ' CASCADE'
                 )
-        except (psycopg2.ProgrammingError, psycopg2.InternalError):
+        except (ProgrammingError, InternalError):
             # Table doesn't exist, not a full schema,
             # ignore.
             # OR:
@@ -293,7 +309,7 @@ class DatabaseLayer(object):
 
     @classmethod
     def drop_relation(cls, relation, kind='TABLE', idempotent=False):
-        "Drops the *relation* of type *kind* (default table), in new transaction."
+        """Drops the *relation* of type *kind* (default table), in new transaction."""
         with cls.borrowed_connection() as conn:
             with conn.cursor() as cur:
                 if idempotent:
@@ -371,9 +387,9 @@ class DatabaseLayer(object):
         print()
         fmt = "| {table_name:35s} | {total:10s} | {index:10s} | {toast:10s} | {table:10s}"
         for row in rows:
-            if not extra_query and row['total'] in (
-                    '72 kB', '32 kB', '24 kB', '16 kB', '8192 bytes'
-            ):
+            if not extra_query and row['total'] in {
+                '72 kB', '32 kB', '24 kB', '16 kB', '8192 bytes'
+            }:
                 continue
             print(fmt.format(
                 **{k: v if v else '<null>' for k, v in row.items()}
@@ -453,7 +469,7 @@ class SchemaDatabaseLayer(DatabaseLayer):
                 ex = e
             except subprocess.CalledProcessError as e:
                 output = ex.output
-                ex = e
+                ex = e # pylint:disable=redefined-variable-type
 
             output = output.decode('utf-8')
 
@@ -533,7 +549,7 @@ class DatabaseBackupLayerHelper:
             dbname=layer.DATABASE_NAME,
             host='localhost',
             port=new_node.port,
-            cursor_factory=psycopg2.extras.DictCursor
+            cursor_factory=DictCursor
         )
 
     @classmethod
@@ -644,10 +660,10 @@ class DatabaseTestCase(unittest.TestCase):
     @contextmanager
     def assertRaisesIntegrityError(self, match=None):
         if match:
-            with self.assertRaisesRegex(psycopg2.IntegrityError, match) as exc:
+            with self.assertRaisesRegex(IntegrityError, match) as exc:
                 yield exc
         else:
-            with self.assertRaises(psycopg2.IntegrityError) as exc:
+            with self.assertRaises(IntegrityError) as exc:
                 yield exc
 
         # We can't do any queries after an error is raised

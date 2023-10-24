@@ -153,6 +153,7 @@ disable=wrong-import-position,
     differing-type-doc,
     compare-to-zero,
     docstring-first-line-empty,
+    too-many-try-statements,
 
 enable=consider-using-augmented-assign
 
