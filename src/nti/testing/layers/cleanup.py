@@ -6,7 +6,7 @@ Support for cleaning up:
 - Garbage collection
 - Registered cleanups.
 
-.. versionadded:: NEXT
+.. versionadded:: 4.0.0
 
 """
 

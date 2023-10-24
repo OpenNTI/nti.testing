@@ -6,7 +6,7 @@ instance as a layer.
 There is also support for benchmarking and saving databeses for
 later examination.
 
-.. versionadded:: NEXT
+.. versionadded:: 4.0.0
 
 The APIs are preliminary and may change.
 

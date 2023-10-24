@@ -2,7 +2,7 @@
  Changes
 =========
 
-4.0.0 (unreleased)
+4.0.0 (2023-10-24)
 ==================
 
 - Add support for Python 3.10, 3.11 and 3.12.

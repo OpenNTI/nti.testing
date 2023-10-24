@@ -3,7 +3,7 @@
 """
 Test layer support.
 
-.. versionchanged:: NEXT
+.. versionchanged:: 4.0.0
 
    This is now a package with sub-modules. Existing imports continue
    to work.

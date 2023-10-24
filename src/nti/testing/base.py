@@ -150,7 +150,7 @@ class PatchingMixin:
     """
     Mixin class adding support for dynamic :mod:`unittest.mock` patches.
 
-    .. versionadded:: NEXT
+    .. versionadded:: 4.0.0
     """
     def patch(self, *args, **kwargs):
         """
@@ -162,7 +162,7 @@ class PatchingMixin:
 
         Returns the result of ``patch.start()``, i.e., a mock object.
 
-        .. versionadded:: NEXT
+        .. versionadded:: 4.0.0
         """
         return self._install_patch(Patch(*args, **kwargs))
 
