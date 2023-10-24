@@ -4,7 +4,7 @@ import codecs
 from setuptools import setup, find_packages
 
 
-version = '3.1.1.dev0'
+version = '4.0.0.dev0'
 
 entry_points = {
 }
@@ -37,13 +37,12 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Testing',
@@ -76,9 +75,6 @@ setup(
             'Sphinx',
             'sphinx_rtd_theme',
         ],
-        ':python_version == "2.7"' : [
-            # backport of unittest.mock for Python 2.7.
-            'mock',
-        ],
     },
+    python_requires=">=3.8",
 )
