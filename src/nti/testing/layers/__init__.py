@@ -18,9 +18,6 @@ from .cleanup import GCLayerMixin
 from .cleanup import SharedCleanupLayer
 from .zope import ZopeComponentLayer
 from .zope import ConfiguringLayerMixin
-from . import cleanup
-from . import postgres
-from . import zope
 
 def find_test():
     """
@@ -53,7 +50,4 @@ __all__ = [
     'ZopeComponentLayer',
     'ConfiguringLayerMixin',
     'find_test',
-    'postgres',
-    'cleanup',
-    'zope',
 ]

@@ -93,7 +93,24 @@ default_role = 'obj'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+# furo: A customizable theme. Intended for smaller datasets, so if we
+# grow too large we may want something different, like
+# sphinx_book_theme.
+#
+# Theme gallery:https://sphinx-themes.org/
+# Furo docs:See https://pradyunsg.me/furo/
+# With Furo, we don't need to have individual ``.. contents::`` directives;
+# if we move away from it we might want to add them back.
+html_theme = 'furo'
+html_css_files = [
+    'custom.css',
+]
+html_theme_options = {
+    'light_css_variables': {
+        'font-stack': '"SF Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"',
+        'font-stack--monospace': '"JetBrainsMono", "JetBrains Mono", "JetBrains Mono Regular", "JetBrainsMono-Regular", ui-monospace, profont, monospace',
+    },
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
