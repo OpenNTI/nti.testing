@@ -78,6 +78,8 @@ setup(
             'sphinx_rtd_theme',
         ],
         'testgres': [
+            'testgres',
+            'psycopg2-binary; python_implementation != "PyPy"',
         ],
     },
     python_requires=">=3.8",

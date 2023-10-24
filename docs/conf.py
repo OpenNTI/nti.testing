@@ -55,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'nti.testing'
-copyright = u'2017, NextThought'
+copyright = u'2017, NextThought, 2023 Jason Madden'
 author = u'NextThought'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -189,6 +189,7 @@ extlinks = {
 autodoc_default_options = {
     'members': None,
     'show-inheritance': None,
+    'special-members': '__enter__, __exit__',
 }
 #autodoc_member_order = 'groupwise'
 autoclass_content = 'both'
