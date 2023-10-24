@@ -75,7 +75,7 @@ setup(
         'test': TESTS_REQUIRE,
         'docs': [
             'Sphinx',
-            'sphinx_rtd_theme',
+            'furo',
         ],
         'testgres': [
             'testgres',
