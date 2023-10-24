@@ -20,7 +20,7 @@ import unittest
 from unittest.mock import patch as Patch
 
 import six
-from six import with_metaclass
+
 
 from zope import component
 from zope.component import eventtesting
@@ -149,23 +149,7 @@ class AbstractConfiguringObject(object):
         return package
 
 
-class AbstractTestBase(zope.testing.cleanup.CleanUp, unittest.TestCase):
-    """
-    Base class for testing. Inherits the setup and teardown functions for
-    :class:`zope.testing.cleanup.CleanUp`; one effect this has is to cause
-    the component registry to be reset after every test.
-
-    .. note:: Do not use this when you use :func:`module_setup` and
-        :func:`module_teardown`, as the inherited :meth:`setUp` will
-        undo the effects of the module setup.
-    """
-
-    def get_configuration_package(self):
-        """
-        See :meth:`AbstractConfiguringObject.get_configuration_package_for_class`.
-        """
-        return AbstractConfiguringObject.get_configuration_package_for_class(self.__class__)
-
+class PatchingMixin:
     def patch(self, *args, **kwargs):
         """
         API for subclasses. All args are passed through to :obj:`unittest.mock.patch`
@@ -190,6 +174,28 @@ class AbstractTestBase(zope.testing.cleanup.CleanUp, unittest.TestCase):
         result = patcher.start()
         self.addCleanup(patcher.stop)
         return result
+
+
+class AbstractTestBase(zope.testing.cleanup.CleanUp,
+                       PatchingMixin,
+                       unittest.TestCase):
+    """
+    Base class for testing. Inherits the setup and teardown functions for
+    :class:`zope.testing.cleanup.CleanUp`; one effect this has is to cause
+    the component registry to be reset after every test.
+
+    .. note:: Do not use this when you use :func:`module_setup` and
+        :func:`module_teardown`, as the inherited :meth:`setUp` will
+        undo the effects of the module setup.
+    """
+
+    def get_configuration_package(self):
+        """
+        See :meth:`AbstractConfiguringObject.get_configuration_package_for_class`.
+        """
+        return AbstractConfiguringObject.get_configuration_package_for_class(self.__class__)
+
+
 
 _shared_cleanups = []
 
@@ -248,7 +254,9 @@ class SharedTestBaseMetaclass(type):
 
 _is_pypy = platform.python_implementation() == 'PyPy'
 
-class AbstractSharedTestBase(with_metaclass(SharedTestBaseMetaclass, unittest.TestCase)):
+class AbstractSharedTestBase(PatchingMixin,
+                             unittest.TestCase,
+                             metaclass=SharedTestBaseMetaclass,):
     """
     Base class for testing that can share most global data (e.g., ZCML
     configuration) between unit tests. This is far more efficient, if
