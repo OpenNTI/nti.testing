@@ -4,16 +4,8 @@
 Hamcrest matchers for testing.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from collections.abc import Sequence, Mapping
 
-# stdlib imports
-try:
-    from collections.abc import Sequence, Mapping
-except ImportError: # pragma: no cover
-    # Python 2
-    from collections import Sequence, Mapping # pylint:disable=deprecated-class
 import pprint
 
 import six
@@ -55,7 +47,7 @@ has_attr = hamcrest.library.has_property
 
 class BoolMatcher(BaseMatcher):
     def __init__(self, value):
-        super(BoolMatcher, self).__init__()
+        super().__init__()
         self.value = value
 
     def _matches(self, item):
@@ -82,7 +74,7 @@ def is_false():
 class Provides(BaseMatcher):
 
     def __init__(self, iface):
-        super(Provides, self).__init__()
+        super().__init__()
         self.iface = iface
 
     def _matches(self, item):
@@ -95,6 +87,7 @@ class Provides(BaseMatcher):
     def __repr__(self):
         return 'object providing' + str(self.iface)
 
+
 def provides(iface):
     """
     Matches an object that provides the given interface.
@@ -105,7 +98,7 @@ def provides(iface):
 class VerifyProvides(BaseMatcher):
 
     def __init__(self, iface):
-        super(VerifyProvides, self).__init__()
+        super().__init__()
         self.iface = iface
 
     def _matches(self, item):
@@ -113,8 +106,7 @@ class VerifyProvides(BaseMatcher):
             verifyObject(self.iface, item)
         except Invalid:
             return False
-        else:
-            return True
+        return True
 
     def describe_to(self, description):
         description.append_text('object verifiably providing ').append_description_of(self.iface)
@@ -148,15 +140,17 @@ def verifiably_provides(*ifaces):
 
     .. note:: This does **not** test schema compliance. For that
         (stricter) test, see :func:`validly_provides`.
+
     """
     if len(ifaces) == 1:
         return VerifyProvides(ifaces[0])
 
     return hamcrest.all_of(*[VerifyProvides(x) for x in ifaces])
 
+
 class VerifyValidSchema(BaseMatcher):
     def __init__(self, iface):
-        super(VerifyValidSchema, self).__init__()
+        super().__init__()
         self.iface = iface
 
     def _matches(self, item):
@@ -185,6 +179,7 @@ class VerifyValidSchema(BaseMatcher):
             except Invalid as x: # pragma: no cover
                 md.append_text(str(x))
 
+
 def validly_provides(*ifaces):
     """
     Matches if the object verifiably and validly provides the given
@@ -203,10 +198,12 @@ def validly_provides(*ifaces):
 
     return hamcrest.all_of(prov, *valid)
 
+
+
 class Implements(BaseMatcher):
 
     def __init__(self, iface):
-        super(Implements, self).__init__()
+        super().__init__()
         self.iface = iface
 
     def _matches(self, item):
@@ -229,7 +226,7 @@ def implements(iface):
 class ValidatedBy(BaseMatcher):
 
     def __init__(self, field, invalid=Invalid):
-        super(ValidatedBy, self).__init__()
+        super().__init__()
         self.field = field
         self.invalid = invalid
 
@@ -238,8 +235,8 @@ class ValidatedBy(BaseMatcher):
             self.field.validate(item)
         except self.invalid:
             return False
-        else:
-            return True
+
+        return True
 
     def describe_to(self, description):
         description.append_text('data validated by').append_description_of(self.field)
@@ -283,7 +280,7 @@ def not_validated_by(field, invalid=Invalid):
     """
     return is_not(validated_by(field, invalid=invalid))
 
-def _aq_inContextOf_NotImplemented(child, parent):
+def _aq_inContextOf_NotImplemented(child, parent): # pylint:disable=unused-argument
     return False
 
 try:
@@ -295,7 +292,7 @@ except ImportError: # pragma: no cover
 
 class AqInContextOf(BaseMatcher):
     def __init__(self, parent):
-        super(AqInContextOf, self).__init__()
+        super().__init__()
         self.parent = parent
 
     def _matches(self, item):

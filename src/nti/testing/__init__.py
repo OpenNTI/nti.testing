@@ -52,6 +52,7 @@ from .matchers import provides
 from .matchers import implements
 from .matchers import verifiably_provides
 from .matchers import validly_provides
+from .matchers import provides
 from .matchers import validated_by
 from .matchers import not_validated_by
 from .matchers import aq_inContextOf
@@ -95,6 +96,7 @@ __all__ = [
     'implements',
     'verifiably_provides',
     'validly_provides',
+    'provides',
     'validated_by',
     'not_validated_by',
     'aq_inContextOf',

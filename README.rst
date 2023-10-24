@@ -32,8 +32,9 @@ Installation
 nti.testing can be installed using pip, either from the git repository
 or from PyPI::
 
-  pip install nti.testing
+  pip install nti.testing[testgres]
 
+Use the ``testgres`` extra to be able to use `nti.testing.layers.postgres`.
 
 PyHamcrest
 ==========
@@ -179,7 +180,7 @@ Test Fixtures
 
 Support for test fixtures can be found in `nti.testing.base` and
 `nti.testing.layers`. The ``base`` package includes fully-fleshed
-out base classes for direct use, while the ``layers`` package includes
+out base classes for direct use, while the ``layers`` package mostly includes
 mixins that can be used to construct your own test layers.
 
 The ``base`` package makes a distinction between "normal" and "shared"

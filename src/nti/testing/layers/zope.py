@@ -1,119 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Test layer support.
+Test layers for working with Zope libraries.
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# stdlib imports
 import gc
 import sys
 import unittest
+import logging
 
 
 from zope import component
 from zope.component import eventtesting
 from zope.component.hooks import setHooks
-import zope.testing.cleanup
 
-from . import transactionCleanUp
-from .base import AbstractConfiguringObject
-from .base import sharedCleanup
+from .. import transactionCleanUp
+from ..base import AbstractConfiguringObject
+from .cleanup import SharedCleanupLayer
 
-from hamcrest import assert_that
-from hamcrest import is_
-
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
-
-class GCLayerMixin(object):
-    """
-    Mixin this layer class and call :meth:`setUpGC` from
-    your layer `setUp` method and likewise for the teardowns
-    when you want to do GC.
-    """
-
-    @classmethod
-    def setUp(cls):
-        pass
-
-    @classmethod
-    def tearDown(cls):
-        pass
-
-    @classmethod
-    def testSetUp(cls):
-        pass
-
-    @classmethod
-    def testTearDown(cls):
-        # Must implement
-        pass
-
-    @classmethod
-    def setUpGC(cls):
-        """
-        This method disables GC until :meth:`tearDownGC` is called.
-        You should call it from your layer ``setUp`` method.
-
-        It also cleans up the zope.testing state.
-        """
-        zope.testing.cleanup.cleanUp()
-        cls.__isenabled = gc.isenabled()
-        gc.disable()
-
-    @classmethod
-    def tearDownGC(cls):
-        """
-        This method executes zope.testing's cleanup and then renables
-        GC. You should call if from your layer ``tearDown`` method.
-        """
-        zope.testing.cleanup.cleanUp()
-
-        if cls.__isenabled:
-            gc.enable()
-
-        gc.collect(0) # collect one generation now to clean up weak refs
-        assert_that(gc.garbage, is_([]))
-
-class SharedCleanupLayer(object):
-    """
-    Mixin this layer when you need cleanup functions
-    that run for every test.
-    """
-
-    @classmethod
-    def setUp(cls):
-        # You MUST implement this, otherwise zope.testrunner
-        # will call the super-class again
-        zope.testing.cleanup.cleanUp()
-
-    @classmethod
-    def tearDown(cls):
-        # You MUST implement this, otherwise zope.testrunner
-        # will call the super-class again
-        zope.testing.cleanup.cleanUp()
-
-    @classmethod
-    def testSetUp(cls):
-        """
-        Calls :func:`~.sharedCleanup` for every test.
-        """
-        sharedCleanup()
-
-    @classmethod
-    def testTearDown(cls):
-        """
-        Calls :func:`~.sharedCleanup` for every test.
-        """
-        sharedCleanup()
-
-
+logger = logging.getLogger(__name__)
 
 class ZopeComponentLayer(SharedCleanupLayer):
     """
@@ -213,32 +119,6 @@ class ConfiguringLayerMixin(AbstractConfiguringObject):
         # This is a duplicate of zope.component.globalregistry
         logger.info('Tearing down packages %s for layer %s', cls.set_up_packages, cls)
         gc.collect()
-        component.getGlobalSiteManager().__init__('base')
+        component.getGlobalSiteManager().__init__('base') # pylint:disable=unnecessary-dunder-call
         gc.collect()
         cls.configuration_context = None
-
-
-def find_test():
-    """
-    The layer support in :class:`nose2.plugins.layers.Layers`
-    optionally supplies the test case object to ``testSetUp``
-    and ``testTearDown``, but ``zope.testrunner`` does not do
-    this. If you need access to the test, you can use an idiom like this::
-
-        @classmethod
-        def testSetUp(cls, test=None):
-            test = test or find_test()
-    """
-
-    i = 2
-    while True:
-        try:
-            frame = sys._getframe(i) # pylint:disable=protected-access
-            i = i + 1
-        except ValueError: # pragma: no cover
-            return None
-        else:
-            if isinstance(frame.f_locals.get('self'), unittest.TestCase):
-                return frame.f_locals['self']
-            if isinstance(frame.f_locals.get('test'), unittest.TestCase):
-                return frame.f_locals['test']

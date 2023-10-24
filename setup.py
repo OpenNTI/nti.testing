@@ -13,6 +13,7 @@ TESTS_REQUIRE = [
     'Acquisition',
     'zope.site',
     'zope.testrunner',
+    'testgres',
 ]
 
 def _read(fname):
@@ -74,6 +75,8 @@ setup(
         'docs': [
             'Sphinx',
             'sphinx_rtd_theme',
+        ],
+        'testgres': [
         ],
     },
     python_requires=">=3.8",
