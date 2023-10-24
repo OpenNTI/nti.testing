@@ -7,6 +7,8 @@
 
 - Add support for Python 3.10, 3.11 and 3.12.
 - Drop support for Python 2 and Python 3.6 and 3.7.
+- Add a layer for working with a ``testgres`` Postgres instance.
+- Add methods to the test base classes to support ``unittest.mock`` patches.
 
 
 3.1.0 (2021-09-08)
