@@ -19,9 +19,6 @@ import sys
 import unittest
 from unittest.mock import patch as Patch
 
-import six
-
-
 from zope import component
 from zope.component import eventtesting
 from zope.component.hooks import setHooks
@@ -150,6 +147,11 @@ class AbstractConfiguringObject(object):
 
 
 class PatchingMixin:
+    """
+    Mixin class adding support for dynamic :mod:`unittest.mock` patches.
+
+    .. versionadded:: NEXT
+    """
     def patch(self, *args, **kwargs):
         """
         API for subclasses. All args are passed through to :obj:`unittest.mock.patch`
@@ -362,7 +364,7 @@ def _configure(self=None,
                 filename = 'configure.zcml'
                 package = i
 
-            if isinstance(package, six.string_types):
+            if isinstance(package, str):
                 package = dottedname.resolve(package)
 
             try:

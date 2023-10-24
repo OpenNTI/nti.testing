@@ -36,9 +36,11 @@ rqmt = pkg_resources.require('nti.testing')[0]
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -72,7 +74,7 @@ release = rqmt.version
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -185,15 +187,16 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'https://docs.python.org/': None,
-    'https://zopecomponent.readthedocs.io/en/latest': None,
-    'https://zopeconfiguration.readthedocs.io/en/latest': None,
-    'https://zopeexceptions.readthedocs.io/en/latest': None,
-    'https://zopeschema.readthedocs.io/en/latest': None,
-    'https://zopeinterface.readthedocs.io/en/latest': None,
-    'https://zodb-docs.readthedocs.io/en/latest': None,
+    'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
+    'python': ('http://docs.python.org/', None,),
+    'sqlalchemy': ('https://docs.sqlalchemy.org', None,),
+    'zopecomponent': ('https://zopecomponent.readthedocs.io/en/latest', None,),
+    'zopeconfiguration': ('https://zopeconfiguration.readthedocs.io/en/latest', None,),
+    'zopeexceptions': ('https://zopeexceptions.readthedocs.io/en/latest', None,),
+    'zopeschema': ('https://zopeschema.readthedocs.io/en/latest', None,),
+    'zopeinterface': ('https://zopeinterface.readthedocs.io/en/latest', None,),
+    'zodb': ('https://zodb-docs.readthedocs.io/en/latest', None,),
 }
-
 extlinks = {
     'issue': ('https://github.com/NextThought/nti.testing/issues/%s',
               'issue #'),
