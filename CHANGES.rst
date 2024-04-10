@@ -2,7 +2,7 @@
  Changes
 =========
 
-4.1.0 (unreleased)
+4.1.0 (2024-04-10)
 ==================
 
 - Add support for, and require, testgres 1.10. This is needed because
