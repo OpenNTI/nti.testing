@@ -52,7 +52,6 @@ from .matchers import provides
 from .matchers import implements
 from .matchers import verifiably_provides
 from .matchers import validly_provides
-from .matchers import provides
 from .matchers import validated_by
 from .matchers import not_validated_by
 from .matchers import aq_inContextOf

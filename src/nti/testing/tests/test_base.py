@@ -79,6 +79,7 @@ class TestBase(unittest.TestCase):
                 raise AssertionError("Not called")
 
         MyTest.setUpClass()
+        # pylint:disable-next=simplifiable-if-expression
         assert_that(gc.isenabled(), is_(False if not base._is_pypy else True))
         MyTest.tearDownClass()
         assert_that(gc.isenabled(), is_(True))
@@ -130,3 +131,30 @@ class TestBase(unittest.TestCase):
         base.module_setup()
         base.module_setup(set_up_packages=('zope.component',))
         base.module_teardown()
+
+    def test_calling_super_linting(self):
+        # Deriving a class from our bases and calling their setup
+        # methods should NOT produce linter warnings.
+        # So this section should not have pylint disable commands.
+        class X(base.AbstractTestBase):
+            def setUp(self):
+                super().setUp()
+                self.thing = 1
+
+            def tearDown(self):
+                super().tearDown()
+                self.thing = 2
+
+        class Y(base.ConfiguringTestBase):
+            def setUp(self):
+                super().setUp()
+                self.thing = 1
+
+            def tearDown(self):
+                super().tearDown()
+                self.thing = 2
+
+        X().setUp()
+        X().tearDown()
+        Y().setUp()
+        Y().tearDown()

@@ -46,7 +46,7 @@ class MockDBTrans(zodb.mock_db_trans):
     def __init__(self, db=None):
         if db is None:
             db = MockDB()
-        super(MockDBTrans, self).__init__(db)
+        super().__init__(db)
         self.exc_file = NativeStringIO()
 
 class TestMockDBTrans(unittest.TestCase):
@@ -85,7 +85,7 @@ class TestMockDBTrans(unittest.TestCase):
         with self.assertRaises(zodb._TransactionManagerModeChanged) as exc:
             with MockDBTrans():
                 transaction.manager.explicit = False
-                raise Exception("BodyError")
+                raise Exception("BodyError") # pylint:disable=broad-exception-raised
         # The backing exception is included
         self.assertIn('BodyError', str(exc.exception))
 
@@ -219,7 +219,8 @@ class TestMockDBTrans(unittest.TestCase):
             pass
 
         class MyFalse(object):
-            __nonzero__ = __bool__ = lambda _self: False
+            def __bool__(self):
+                return False
 
         transaction.manager.explicit = MyFalse()
         class MyMock(MockDBTrans):
@@ -276,10 +277,10 @@ class TestZODBLayer(unittest.TestCase):
 
 
 class IExtra(interface.Interface): # pylint:disable=inherit-non-class
-    "An extra interface"
+    """An extra interface."""
 
 class IExtra2(interface.Interface): # pylint:disable=inherit-non-class
-    "Another extra interface"
+    """Another extra interface."""
 
 class Object(object):
 
@@ -290,12 +291,12 @@ class TestResetDbCaches(unittest.TestCase):
     layer = zodb.ZODBLayer
 
     def setUp(self):
-        super(TestResetDbCaches, self).setUp()
+        super().setUp()
         gc.disable()
 
     def tearDown(self):
         gc.enable()
-        super(TestResetDbCaches, self).tearDown()
+        super().tearDown()
 
     def test_persistent_site_closed(self):
         from zope.site.site import LocalSiteManager

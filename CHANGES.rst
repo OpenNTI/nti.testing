@@ -2,10 +2,12 @@
  Changes
 =========
 
-4.0.1 (unreleased)
+4.1.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for, and require, testgres 1.10. This is needed because
+  they changed the signature for ``get_pg_version``.
+- Drop support for Python 3.8 and 3.9.
 
 
 4.0.0 (2023-10-24)

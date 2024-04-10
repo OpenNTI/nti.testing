@@ -1,4 +1,5 @@
 # Copyright 2017 NextThought
+# Copyright 2022-2024 Jason Madden
 # Released under the terms of the LICENSE file.
 import codecs
 from setuptools import setup, find_packages
@@ -13,7 +14,7 @@ TESTS_REQUIRE = [
     'Acquisition',
     'zope.site',
     'zope.testrunner',
-    'testgres',
+    'testgres >= 1.10',
     'psycopg2-binary; python_implementation != "PyPy"',
 ]
 
@@ -40,8 +41,6 @@ setup(
         'Operating System :: OS Independent',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
@@ -78,9 +77,9 @@ setup(
             'furo',
         ],
         'testgres': [
-            'testgres',
+            'testgres >= 1.10',
             'psycopg2-binary; python_implementation != "PyPy"',
         ],
     },
-    python_requires=">=3.8",
+    python_requires=">=3.10",
 )

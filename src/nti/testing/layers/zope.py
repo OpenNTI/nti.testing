@@ -6,8 +6,6 @@ Test layers for working with Zope libraries.
 """
 
 import gc
-import sys
-import unittest
 import logging
 
 

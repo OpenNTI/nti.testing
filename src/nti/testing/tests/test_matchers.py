@@ -81,7 +81,7 @@ class TestMatchers(unittest.TestCase):
             thing = interface.Attribute("thing")
 
             def method(): # pylint:disable=no-method-argument
-                "method"
+                """Does nothing."""
 
         @interface.implementer(IThing)
         class Thing(object):

@@ -78,7 +78,11 @@ if 'NTI_LOAD_DB_FILE' in os.environ:
     LOAD_DATABASE_ON_SETUP = os.environ['NTI_LOAD_DB_FILE']
 
 
-def patched_get_pg_version():
+def patched_get_pg_version(*args, **kwargs):
+    # We patch  this in testgres.node, so its ok to import
+    # the original. In version 1.10, they changed the signature
+    # of this function, so be sure to accept whatever it does and
+    # pass it on.
     from testgres.utils import get_pg_version
     from testgres.node import PgVer
     from packaging.version import InvalidVersion
@@ -90,7 +94,7 @@ def patched_get_pg_version():
     # "15.3-0+". If it can't be parsed, then return a fake.
 
     try:
-        version = get_pg_version()
+        version = get_pg_version(*args, **kwargs)
         PgVer(version)
     except InvalidVersion:
         print('testgres: Got invalid postgres version', version)

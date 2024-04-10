@@ -11,7 +11,7 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: ["pypy-3.10", "3.8", "3.9", "3.11", "3.12"]
+        python-version: ["pypy-3.10", "3.10", "3.11", "3.12"]
 
     runs-on: ubuntu-latest
     steps:
@@ -31,6 +31,11 @@ jobs:
       run: |
         coverage run -m zope.testrunner --test-path=src  --auto-color --auto-progress
         coverage run -a -m sphinx -b doctest -d docs/_build/doctrees docs docs/_build/doctests
+    - name: Lint
+      if: matrix.python-version == "3.12"
+      run: |
+        python -m pip install -U pylint
+        pylint src
     - name: Submit to Coveralls
       # This is a container action, which only runs on Linux.
       uses: AndreMiras/coveralls-python-action@develop

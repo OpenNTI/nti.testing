@@ -352,7 +352,9 @@ BaseDescription.append_description_of = _append_description_of_map
 
 
 class TypeCheckedDict(dict):
-    "A dictionary that ensures keys and values are of the required type when set"
+    """
+    A dictionary that ensures keys and values are of the required type when set
+    """
 
     def __init__(self, key_class=object, val_class=object, notify=None):
         dict.__init__(self)

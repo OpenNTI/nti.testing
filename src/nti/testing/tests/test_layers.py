@@ -28,7 +28,7 @@ class TestLayers(unittest.TestCase):
 
         func()
 
-        def via_test(test):
+        def via_test(test): # pylint:disable=unused-argument
             func()
 
         via_test(self)

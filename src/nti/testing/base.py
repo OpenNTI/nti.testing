@@ -400,7 +400,8 @@ class ConfiguringTestBase(AbstractConfiguringObject,
     def _doSetUpSuper(self):
         super().setUp()
 
-    setUp = AbstractConfiguringObject._doSetUp
+    def setUp(self):
+        AbstractConfiguringObject._doSetUp(self)
 
     #: Configure additional packages. This should only be done in the ``setUp`` method
     #: of a subclass. Note that this is called by ``setUp``.
@@ -419,7 +420,23 @@ class ConfiguringTestBase(AbstractConfiguringObject,
     def _doTearDownSuper(self):
         super().tearDown()
 
-    tearDown = AbstractConfiguringObject._doTearDown
+    def tearDown(self):
+        self._doTearDownConfiguration()
+
+    def _doTearDownConfiguration(self):
+        """
+        Hook for subclasses to override.
+
+        This implementation calls :meth:`AbstractConfiguringObject._doTearDown`
+        with the default parameters. If you need to call it with a different
+        set of parameters, override this method to do so.
+
+        This method takes no arguments because the arguments passed to
+        ``_doTearDown`` are almost always static at the callsite.
+        """
+        AbstractConfiguringObject._doTearDown(
+            self,
+        )
 
 class SharedConfiguringTestBase(AbstractConfiguringObject,
                                 AbstractSharedTestBase):

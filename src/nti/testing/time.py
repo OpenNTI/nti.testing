@@ -56,7 +56,7 @@ class _TimeWrapper(object):
 
     __enter__ = install_fakes
 
-    def close(self, *args):
+    def close(self, *_args):
         time.time = _real_time
         time.gmtime = _real_gmtime
 

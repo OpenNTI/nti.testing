@@ -140,7 +140,7 @@ class mock_db_trans(object):
         catch = Exception if ignore_errors else ()
         try:
             conn.close()
-        except catch:
+        except catch: # pylint:disable=broad-exception-caught
             self._report_exception("Unexpected error closing connection; ignored.", *sys.exc_info())
 
     def __exit__(self, t, v, tb):
