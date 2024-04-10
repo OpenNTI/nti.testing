@@ -32,7 +32,7 @@ jobs:
         coverage run -m zope.testrunner --test-path=src  --auto-color --auto-progress
         coverage run -a -m sphinx -b doctest -d docs/_build/doctrees docs docs/_build/doctests
     - name: Lint
-      if: matrix.python-version == "3.12"
+      if: matrix.python-version == '3.12'
       run: |
         python -m pip install -U pylint
         pylint src
