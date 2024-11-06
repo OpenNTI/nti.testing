@@ -2,7 +2,8 @@
 # Copyright 2022-2024 Jason Madden
 # Released under the terms of the LICENSE file.
 import codecs
-from setuptools import setup, find_packages
+from setuptools import setup
+from setuptools import find_namespace_packages
 
 
 version = '4.1.1.dev0'
@@ -41,25 +42,25 @@ setup(
         'Operating System :: OS Independent',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: Only',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Testing',
         'Framework :: Zope3',
     ],
     zip_safe=True,
-    packages=find_packages('src'),
+    packages=find_namespace_packages(where='src'),
     package_dir={'': 'src'},
-    namespace_packages=['nti'],
     install_requires=[
         'ZODB >= 5.6.0',
         # Error messages changed in 5.1, reprs changed <= 5.4
         'zope.interface >= 5.4.0',
         'pyhamcrest',
         'six',
-        'setuptools',
         'transaction',
         'zope.component',
         'zope.configuration',

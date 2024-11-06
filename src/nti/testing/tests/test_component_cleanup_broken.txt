@@ -17,7 +17,6 @@ We can demonstrate this with some code.
 
 First we import the basic modules::
 
-	>>> import pkg_resources # to make sure namespace imports work
 	>>> from zope.testing import cleanup
 	>>> from zope import interface
 	>>> from zope import component
