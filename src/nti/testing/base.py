@@ -94,7 +94,7 @@ class AbstractConfiguringObject(object):
             package=obj.get_configuration_package())
 
     @staticmethod
-    def _do_configure_packages(obj,
+    def _do_configure_packages(obj, # pylint:disable=too-many-positional-arguments
                                set_up_packages=(),
                                features=(),
                                context=_marker,

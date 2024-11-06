@@ -154,7 +154,7 @@ class mock_db_trans(object):
         tx = self.__current_transaction
         if not txm.explicit:
             abort_only = True
-            error_in_body = _TransactionManagerModeChanged(t, v, tb)
+            error_in_body:Exception = _TransactionManagerModeChanged(t, v, tb)
 
         try:
             if txm.get() is not tx:
