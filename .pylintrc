@@ -1,6 +1,5 @@
 [MASTER]
 load-plugins=pylint.extensions.bad_builtin,
-   pylint.extensions.broad_try_clause,
    pylint.extensions.check_elif,
    pylint.extensions.code_style,
    pylint.extensions.dict_init_mutate,
@@ -16,12 +15,8 @@ load-plugins=pylint.extensions.bad_builtin,
    pylint.extensions.overlapping_exceptions,
    pylint.extensions.docparams,
    pylint.extensions.private_import,
+   pylint.extensions.set_membership,
    pylint.extensions.typing,
-
-#    pylint.extensions.set_membership,
-# wants you to turn ``foo in (1, 2)`` into ``foo in {1, 2}``;
-# but for small tuples, the former is actually more
-# performant.
 
 # magic_value wants you to not use arbitrary strings and numbers
 # inline in the code. But it's overzealous and has way too many false
@@ -155,8 +150,6 @@ disable=wrong-import-position,
     differing-type-doc,
     compare-to-zero,
     docstring-first-line-empty,
-    too-many-try-statements,
-    redefined-variable-type,
 
 enable=consider-using-augmented-assign
 
