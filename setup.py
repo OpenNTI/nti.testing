@@ -76,7 +76,7 @@ setup(
         'docs': [
             'Sphinx',
             'furo',
-        ],
+        ] + TESTS_REQUIRE,
         'testgres': [
             'testgres >= 1.10',
             'psycopg2-binary; python_implementation != "PyPy"',
