@@ -2,7 +2,7 @@
  Changes
 =========
 
-4.3.0 (unreleased)
+4.3.0 (2025-04-22)
 ==================
 
 - Support and require testgres version 1.11. This version refactored
