@@ -82,8 +82,10 @@ def patched_get_pg_version(*args, **kwargs):
     # We patch  this in testgres.node, so its ok to import
     # the original. In version 1.10, they changed the signature
     # of this function, so be sure to accept whatever it does and
-    # pass it on.
-    from testgres.utils import get_pg_version
+    # pass it on. In version 1.11, this was replaced with
+    # get_pg_version2, which does the same thing just takes
+    # more arguments.
+    from testgres.utils import get_pg_version2
     from testgres.node import PgVer
     from packaging.version import InvalidVersion
 
@@ -94,7 +96,7 @@ def patched_get_pg_version(*args, **kwargs):
     # "15.3-0+". If it can't be parsed, then return a fake.
 
     try:
-        version = get_pg_version(*args, **kwargs)
+        version = get_pg_version2(*args, **kwargs)
         PgVer(version)
     except InvalidVersion:
         print('testgres: Got invalid postgres version', version)
@@ -145,7 +147,7 @@ class DatabaseLayer(object):
     def setUp(cls):
         testgres.configure_testgres()
 
-        with patch('testgres.node.get_pg_version', new=patched_get_pg_version):
+        with patch('testgres.node.get_pg_version2', new=patched_get_pg_version):
             node = cls.postgres_node = testgres.get_new_node()
 
         # init takes about about 2 -- 3 seconds

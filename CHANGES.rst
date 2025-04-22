@@ -2,10 +2,12 @@
  Changes
 =========
 
-4.2.1 (unreleased)
+4.3.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Support and require testgres version 1.11. This version refactored
+  some internals, breaking the monkey-patches that ``DatabaseLayer``
+  applies.
 
 
 4.2.0.post0 (2024-11-08)

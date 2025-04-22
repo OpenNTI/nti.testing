@@ -15,7 +15,7 @@ TESTS_REQUIRE = [
     'Acquisition',
     'zope.site',
     'zope.testrunner',
-    'testgres >= 1.10',
+    'testgres >= 1.11',
     'psycopg2-binary; python_implementation != "PyPy"',
 ]
 
@@ -78,7 +78,7 @@ setup(
             'furo',
         ] + TESTS_REQUIRE,
         'testgres': [
-            'testgres >= 1.10',
+            'testgres >= 1.11',
             'psycopg2-binary; python_implementation != "PyPy"',
         ],
     },
