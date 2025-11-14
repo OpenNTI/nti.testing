@@ -2,7 +2,7 @@
  Changes
 =========
 
-4.4.0 (unreleased)
+4.4.0 (2025-11-14)
 ==================
 
 - Move ZODB and related dependencies to the optional 'zodb' extra.
