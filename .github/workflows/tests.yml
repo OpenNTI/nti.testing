@@ -14,7 +14,6 @@ jobs:
       matrix:
         python-version: ["pypy-3.11", "3.10", "3.11", "3.12", "3.13", "3.14"]
         extras:
-          - "[test,docs]"
           - "[test,docs,zodb,test-zodb]"
 
     runs-on: ubuntu-latest
