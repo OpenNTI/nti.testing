@@ -13,7 +13,6 @@ entry_points = {
 
 TESTS_REQUIRE = [
     'Acquisition',
-    'zope.site',
     'zope.testrunner',
     'testgres >= 1.11',
     'psycopg2-binary; python_implementation != "PyPy"',
@@ -47,6 +46,7 @@ setup(
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Testing',
@@ -56,7 +56,6 @@ setup(
     packages=find_namespace_packages(where='src'),
     package_dir={'': 'src'},
     install_requires=[
-        'ZODB >= 5.6.0',
         # Error messages changed in 5.1, reprs changed <= 5.4
         'zope.interface >= 5.4.0',
         'pyhamcrest',
@@ -72,7 +71,13 @@ setup(
     entry_points=entry_points,
     include_package_data=True,
     extras_require={
+        'zodb': [
+            'ZODB >= 5.6.0',
+        ],
         'test': TESTS_REQUIRE,
+        'test-zodb': [
+            'zope.site',
+        ],
         'docs': [
             'Sphinx',
             'furo',

@@ -89,7 +89,10 @@ class TestBase(unittest.TestCase):
 
 
     def test_configuring_base(self):
-        import zope.traversing.tests.test_traverser
+        try:
+            import zope.traversing.tests.test_traverser
+        except ModuleNotFoundError:
+            self.skipTest('zope.traversing not installed')
         class MyTest(base.ConfiguringTestBase):
             set_up_packages = ('zope.component',
                                ('configure.zcml', 'zope.component'),
@@ -104,7 +107,10 @@ class TestBase(unittest.TestCase):
         mt.tearDown() # pylint:disable=no-value-for-parameter
 
     def test_shared_configuring_base(self):
-        import zope.traversing.tests.test_traverser
+        try:
+            import zope.traversing.tests.test_traverser
+        except ModuleNotFoundError:
+            self.skipTest('zope.traversing not installed')
         class MyTest(base.SharedConfiguringTestBase):
             layer = None # replaced by metaclass
             set_up_packages = ('zope.component',

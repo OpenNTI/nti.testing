@@ -14,7 +14,13 @@ import unittest
 import transaction
 from transaction.interfaces import NoTransaction
 from zope import interface
-from nti.testing import zodb
+try:
+    from nti.testing import zodb
+    base_mock_db_trans = zodb.mock_db_trans
+except ModuleNotFoundError as ex:
+    assert ex.name == 'ZODB'
+    zodb = None
+    base_mock_db_trans = object
 
 # pylint:disable=protected-access,pointless-string-statement
 
@@ -41,7 +47,7 @@ class MockConn(object):
         self.minimized = True
 
 
-class MockDBTrans(zodb.mock_db_trans):
+class MockDBTrans(base_mock_db_trans):
 
     def __init__(self, db=None):
         if db is None:
@@ -52,6 +58,8 @@ class MockDBTrans(zodb.mock_db_trans):
 class TestMockDBTrans(unittest.TestCase):
 
     def setUp(self):
+        if zodb is None:
+            self.skipTest("ZODB not installed")
         self._was_explicit = transaction.manager.explicit
         transaction.manager.explicit = False
 
@@ -226,7 +234,7 @@ class TestMockDBTrans(unittest.TestCase):
         class MyMock(MockDBTrans):
             seen_tx = None
             aborted = False
-            def on_connection_opened(self, conn):
+            def on_connection_opened(self, _conn):
                 # pylint:disable=no-member
                 self.seen_tx = self._mock_db_trans__current_transaction
                 abort = self.seen_tx.abort
@@ -255,7 +263,13 @@ class TestMockDBTrans(unittest.TestCase):
 
 class TestZODBLayer(unittest.TestCase):
 
-    layer = zodb.ZODBLayer
+    if zodb is not None:
+        layer = zodb.ZODBLayer
+
+    def setUp(self):
+        super().setUp()
+        if zodb is None:
+            self.skipTest("ZODB not installed")
 
     def test_registration(self):
         from ZODB.interfaces import IDatabase
@@ -288,10 +302,14 @@ class Object(object):
         pass
 
 class TestResetDbCaches(unittest.TestCase):
-    layer = zodb.ZODBLayer
+
+    if zodb is not None:
+        layer = zodb.ZODBLayer
 
     def setUp(self):
         super().setUp()
+        if zodb is None:
+            self.skipTest("ZODB not installed")
         gc.disable()
 
     def tearDown(self):
