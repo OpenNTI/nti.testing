@@ -2,10 +2,11 @@
  Changes
 =========
 
-4.3.1 (unreleased)
+4.4.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Move ZODB and related dependencies to the optional 'zodb' extra.
+- Add support for Python 3.14.
 
 
 4.3.0 (2025-04-22)
