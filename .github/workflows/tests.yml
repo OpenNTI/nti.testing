@@ -36,6 +36,10 @@ jobs:
         coverage run -a -m sphinx -b doctest -d docs/_build/doctrees docs docs/_build/doctests
         coverage combine || true
         coverage report -i || true
+    - name: Test No ZODB
+      run: |
+        python -m pip uninstall -y ZODB zope.site persistent
+        python -m zope.testrunner --test-path=src  --auto-color --auto-progress
     - name: Lint
       if: matrix.python-version == '3.14'
       run: |
