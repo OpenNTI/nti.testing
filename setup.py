@@ -6,7 +6,7 @@ from setuptools import setup
 from setuptools import find_namespace_packages
 
 
-version = '4.4.0'
+version = '4.4.1.dev0'
 
 entry_points = {
 }
