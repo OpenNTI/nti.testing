@@ -6,6 +6,7 @@
 ==================
 
 - Add ``patch_object`` to the test bases.
+- Add support for Python 3.15.
 
 
 4.4.0 (2025-11-14)
