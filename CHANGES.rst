@@ -2,7 +2,7 @@
  Changes
 =========
 
-4.5.0 (unreleased)
+4.5.0 (2026-07-02)
 ==================
 
 - Add ``patch_object`` to the test bases.
