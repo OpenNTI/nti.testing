@@ -3,12 +3,7 @@
 """
 Tests for base.py.
 
-.. $Id$
 """
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 # stdlib imports
 import unittest
@@ -20,8 +15,6 @@ from hamcrest import assert_that
 from hamcrest import is_
 
 __docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
 
 #disable: accessing protected members, too many methods
 #pylint: disable=W0212,R0904
@@ -164,3 +157,16 @@ class TestBase(unittest.TestCase):
         X().tearDown()
         Y().setUp()
         Y().tearDown()
+
+
+class TestPatchingMixin(base.PatchingMixin, unittest.TestCase):
+
+    def test_patch_object(self):
+        class ToPatch:
+            def meth(self):
+                return -1
+
+        to_patch = ToPatch()
+        self.patch_object(to_patch, 'meth', return_value=42)
+
+        self.assertEqual(to_patch.meth(), 42)

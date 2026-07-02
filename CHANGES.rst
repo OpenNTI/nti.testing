@@ -2,10 +2,10 @@
  Changes
 =========
 
-4.4.1 (unreleased)
+4.5.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add ``patch_object`` to the test bases.
 
 
 4.4.0 (2025-11-14)

@@ -7,32 +7,29 @@ In some cases, you may be better off using :mod:`zope.component.testlayer`.
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 # stdlib imports
 import gc
+import logging
 import os
 import platform
 import sys
 import unittest
 from unittest.mock import patch as Patch
 
+import zope.testing.cleanup
 from zope import component
 from zope.component import eventtesting
 from zope.component.hooks import setHooks
 from zope.configuration import config
 from zope.configuration import xmlconfig
 from zope.dottedname import resolve as dottedname
-import zope.testing.cleanup
 
 from hamcrest import assert_that
 from hamcrest import is_
 
 from . import transactionCleanUp
 
-logger = __import__('logging').getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 _marker = object()
@@ -94,7 +91,7 @@ class AbstractConfiguringObject(object):
             package=obj.get_configuration_package())
 
     @staticmethod
-    def _do_configure_packages(obj, # pylint:disable=too-many-positional-arguments
+    def _do_configure_packages(obj,
                                set_up_packages=(),
                                features=(),
                                context=_marker,
@@ -165,6 +162,20 @@ class PatchingMixin:
         .. versionadded:: 4.0.0
         """
         return self._install_patch(Patch(*args, **kwargs))
+
+    def patch_object(self, target, attribute, *args, **kwargs):
+        """
+        API for subclasses. All args are passed through to :obj:`unittest.mock.patch.object`
+        which is then started and registered for cleanup.
+
+        This is intended to be used in ``setUp`` or individual test methods
+        when what you might need to patch is dynamic.
+
+        Returns the result of ``patch.start()``, i.e., a mock object.
+
+        .. versionadded:: NEXT
+        """
+        self._install_patch(Patch.object(target, attribute, *args, **kwargs))
 
     def _install_patch(self, patcher):
         """
