@@ -173,7 +173,7 @@ class PatchingMixin:
 
         Returns the result of ``patch.start()``, i.e., a mock object.
 
-        .. versionadded:: NEXT
+        .. versionadded:: 4.5.0
         """
         self._install_patch(Patch.object(target, attribute, *args, **kwargs))
 
