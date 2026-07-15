@@ -167,6 +167,7 @@ class TestPatchingMixin(base.PatchingMixin, unittest.TestCase):
                 return -1
 
         to_patch = ToPatch()
-        self.patch_object(to_patch, 'meth', return_value=42)
+        patch_result = self.patch_object(to_patch, 'meth', return_value=42)
 
         self.assertEqual(to_patch.meth(), 42)
+        self.assertIsNotNone(patch_result)

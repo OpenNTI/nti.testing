@@ -5,7 +5,7 @@
 4.5.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Make ``patch_object`` really return the mock object, as documented.
 
 
 4.5.0 (2026-07-07)
