@@ -18,6 +18,8 @@ import functools
 import os
 import sys
 import unittest
+import warnings
+
 from unittest.mock import patch
 
 #import psycopg2
@@ -108,6 +110,47 @@ def patched_get_pg_version(*args, **kwargs):
         print('testgres: Substituting version', version)
 
     return version
+
+if sys.platform == 'darwin' and 'NTI_TESTING_POSTGRES_SKIP_PLAT_UTIL_FIX' not in os.environ:
+    def _check_and_apply_platform_utils_fix():
+        try:
+            import testgres.impl.platforms.internal_platform_utils_factory as IPUF
+            orig_create_internal_platform_utils = IPUF.create_internal_platform_utils
+            from testgres.operations.local_ops import LocalOperations
+            from testgres.impl.platforms.internal_platform_utils import InternalPlatformUtils
+            os_ops = LocalOperations()
+            putils = orig_create_internal_platform_utils(os_ops)
+        except (AttributeError, ImportError, TypeError, ValueError):
+            warnings.warn('nti.testing.postgres: Unknown version of testgres, '
+                          'not applying macOS-specific patches')
+            import traceback
+            traceback.print_exc()
+        else:
+            if type(putils) is InternalPlatformUtils: # pylint: disable=unidiomatic-typecheck
+                # Getting the fallback, that doesn't work, all methods raise
+                # NotImplemented. See https://github.com/postgrespro/testgres/issues/432
+                #
+                # We can use the win32 implementation, which doesn't actually do much
+                # Note it's not clear which way is going to have the safer path moving
+                # forward: directly using the win32 class (what happens if it gains new
+                # methods that use win32 APIs without an abstraction layer like psutil?)
+                # or subclassing ``base.InternalPlatformUtils`` and implementing the
+                # current two abstract methods (just like win32 does) and hoping that the
+                # base class doesn't add more abstract methods that we have to implement.
+                #
+                # Right now, based on the simplicity of the win32 class, my guess is that
+                # the testgres developers will continue to use no-op type code for any
+                # future abstract methods there, so that's what we're going with.
+                warnings.warn('nti.testing.postgres: Patching internal platform'
+                              ' utils to use no-op class on macOS')
+                def patched_create_internal_platform_utils(*_args, **_kwargs):
+                    import testgres.impl.platforms.win32.internal_platform_utils as x
+                    return x.InternalPlatformUtils()
+                IPUF.create_internal_platform_utils = patched_create_internal_platform_utils
+            else: # pragma: no cover
+                warnings.warn('nti.testing.postgres: Will use existing'
+                              ' InternalPlatformUtils on macOS: %s'  % (putils,))
+    _check_and_apply_platform_utils_fix()
 
 class DatabaseLayer(object):
     """

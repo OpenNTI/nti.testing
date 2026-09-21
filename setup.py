@@ -84,8 +84,18 @@ setup(
             'furo',
         ] + TESTS_REQUIRE,
         'testgres': [
-            'testgres >= 1.11; platform_system != "Darwin"',
-            'testgres == 1.14.4; platform_system == "Darwin"',
+            'testgres >= 1.11',
+            # 1.14.4 is the last release before testgres adapted the
+            # "internal_platform_utils" concept. 1.15.x and 1.16.[01] don't
+            # provide an implementation that works on macOS, leading to
+            # NotImplementedError exceptions. We can either
+            # pin to an old version on macOS like this::
+            #
+            # 'testgres >= 1.11; platform_system != "Darwin"',
+            # 'testgres == 1.14.4; platform_system == "Darwin"',
+            #
+            # Or we can attempt a work-around in code. Currently, we're
+            # attempting a workaround in code.
             'psycopg2-binary; python_implementation != "PyPy"',
         ],
     },

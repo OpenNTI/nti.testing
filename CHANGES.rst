@@ -2,12 +2,15 @@
  Changes
 =========
 
-4.5.2 (unreleased)
+4.6.0 (unreleased)
 ==================
 
-- Adapt to changes in recent testgres releases. Note that the testgres
-  extra will install 1.14.4 on macOS because more recent versions are
-  currently broken (see `this bug report <https://github.com/postgrespro/testgres/issues/432>`_).
+- Adapt to changes in recent testgres releases. Testgres 1.16.1 is now
+  supported and works on macOS. This patching code is designed
+  carefully, but if it stops working on a new testgres release, try
+  setting the environment variable
+  ``'NTI_TESTING_POSTGRES_SKIP_PLAT_UTIL_FIX'`` before importing this package.
+
 
 
 4.5.1 (2026-07-15)
