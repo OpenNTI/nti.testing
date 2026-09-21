@@ -22,10 +22,6 @@ import warnings
 
 from unittest.mock import patch
 
-#import psycopg2
-#import psycopg2.extras
-#import psycopg2.pool
-
 
 from psycopg2 import ProgrammingError
 
@@ -76,6 +72,7 @@ if 'NTI_LOAD_DB_FILE' in os.environ: # pragma: no cover
 # so we need to preemptively import the original
 from testgres.utils import get_pg_version2 as _orig_get_pg_version2
 
+REPLACEMENT_PG_VERSION_FOR_ERROR = os.environ.get('NTI_TESTING_POSTGRES_FAKE_VERSION', '17.0')
 
 def patched_get_pg_version(*args, **kwargs):
     # In version 1.10, they changed the signature
@@ -83,6 +80,9 @@ def patched_get_pg_version(*args, **kwargs):
     # pass it on. In version 1.11, this was replaced with
     # get_pg_version2, which does the same thing just takes
     # more arguments.
+    #
+    # XXX: Some of the invalid inputs that used to cause this seem
+    # to no longer do that, possibly we could remove this patch?
     from testgres.utils import PgVer
     from packaging.version import InvalidVersion
 
@@ -99,7 +99,7 @@ def patched_get_pg_version(*args, **kwargs):
         print('testgres: Got invalid postgres version', version)
         # The actual version string looks like "postgres (PostgreSQL) 15.4",
         # and get_pg_version() processes that down to this
-        version = "15.4"
+        version = REPLACEMENT_PG_VERSION_FOR_ERROR
         print('testgres: Substituting version', version)
 
     return version
@@ -113,7 +113,7 @@ if sys.platform == 'darwin' and 'NTI_TESTING_POSTGRES_SKIP_PLAT_UTIL_FIX' not in
             from testgres.impl.platforms.internal_platform_utils import InternalPlatformUtils
             os_ops = LocalOperations()
             putils = orig_create_internal_platform_utils(os_ops)
-        except (AttributeError, ImportError, TypeError, ValueError):
+        except (AttributeError, ImportError, TypeError, ValueError): # pragma: no cover
             warnings.warn('nti.testing.postgres: Unknown version of testgres, '
                           'not applying macOS-specific patches')
             import traceback
@@ -732,7 +732,6 @@ class DatabaseTestCase(unittest.TestCase):
 
     def assert_row_count_in_query(self, expected_count, query):
         cur = self.layer.cursor
-
         cur.execute('SELECT COUNT(*) FROM ' + query)
         row = cur.fetchone()
         count = row[0]
