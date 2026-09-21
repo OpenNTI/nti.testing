@@ -22,25 +22,13 @@ import warnings
 
 from unittest.mock import patch
 
-#import psycopg2
-#import psycopg2.extras
-#import psycopg2.pool
 
-try:
-    from psycopg2 import ProgrammingError
-except ImportError:
-    ThreadedConnectionPool = None
-    DictCursor = None
-    class IntegrityError(Exception):
-        """Never thrown"""
-    ProgrammingError = InternalError = IntegrityError
-else:
-    from psycopg2.pool import ThreadedConnectionPool
-    from psycopg2.extras import DictCursor
-    from psycopg2 import IntegrityError
-    from psycopg2 import InternalError
+from psycopg2 import ProgrammingError
 
-
+from psycopg2.pool import ThreadedConnectionPool
+from psycopg2.extras import DictCursor
+from psycopg2 import IntegrityError
+from psycopg2 import InternalError
 
 
 if 'PG_CONFIG' not in os.environ:
@@ -49,6 +37,7 @@ if 'PG_CONFIG' not in os.environ:
     for option in (
         '/opt/local/lib/postgresql11/bin/pg_config',
         '/usr/pgsql-11/bin/pg_config',
+        '/usr/bin/pg_config',
     ):
         if os.path.isfile(option):
             # TODO: Check exec bit
@@ -64,7 +53,7 @@ SAVE_DATABASE_FILENAME = None
 # will be restored from this file on setUp.
 LOAD_DATABASE_ON_SETUP = None
 
-if 'NTI_SAVE_DB' in os.environ:
+if 'NTI_SAVE_DB' in os.environ: # pragma: no cover
     # NTI_SAVE_DB is either 1/on/true (case-insensitive)
     # or a file name.
     val = os.environ['NTI_SAVE_DB']
@@ -76,13 +65,14 @@ if 'NTI_SAVE_DB' in os.environ:
             SAVE_DATABASE_FILENAME = val
 
 
-if 'NTI_LOAD_DB_FILE' in os.environ:
+if 'NTI_LOAD_DB_FILE' in os.environ: # pragma: no cover
     LOAD_DATABASE_ON_SETUP = os.environ['NTI_LOAD_DB_FILE']
 
 # We may patch this in testgres.node, or testgres.utils
 # so we need to preemptively import the original
 from testgres.utils import get_pg_version2 as _orig_get_pg_version2
 
+REPLACEMENT_PG_VERSION_FOR_ERROR = os.environ.get('NTI_TESTING_POSTGRES_FAKE_VERSION', '17.0')
 
 def patched_get_pg_version(*args, **kwargs):
     # In version 1.10, they changed the signature
@@ -90,6 +80,9 @@ def patched_get_pg_version(*args, **kwargs):
     # pass it on. In version 1.11, this was replaced with
     # get_pg_version2, which does the same thing just takes
     # more arguments.
+    #
+    # XXX: Some of the invalid inputs that used to cause this seem
+    # to no longer do that, possibly we could remove this patch?
     from testgres.utils import PgVer
     from packaging.version import InvalidVersion
 
@@ -106,7 +99,7 @@ def patched_get_pg_version(*args, **kwargs):
         print('testgres: Got invalid postgres version', version)
         # The actual version string looks like "postgres (PostgreSQL) 15.4",
         # and get_pg_version() processes that down to this
-        version = "15.4"
+        version = REPLACEMENT_PG_VERSION_FOR_ERROR
         print('testgres: Substituting version', version)
 
     return version
@@ -120,7 +113,7 @@ if sys.platform == 'darwin' and 'NTI_TESTING_POSTGRES_SKIP_PLAT_UTIL_FIX' not in
             from testgres.impl.platforms.internal_platform_utils import InternalPlatformUtils
             os_ops = LocalOperations()
             putils = orig_create_internal_platform_utils(os_ops)
-        except (AttributeError, ImportError, TypeError, ValueError):
+        except (AttributeError, ImportError, TypeError, ValueError): # pragma: no cover
             warnings.warn('nti.testing.postgres: Unknown version of testgres, '
                           'not applying macOS-specific patches')
             import traceback
@@ -193,6 +186,7 @@ class DatabaseLayer(object):
         import testgres
         import testgres.node
         import testgres.utils
+
         testgres.configure_testgres()
 
         if hasattr(testgres.node, 'get_pg_version2'):
@@ -249,7 +243,7 @@ class DatabaseLayer(object):
         node.append_conf('max_connections = 100')
 
         # auto-explain for slow queries
-        if 'benchmark' in ' '.join(sys.argv):
+        if 'benchmark' in ' '.join(sys.argv): # pragma: no cover
             print("Enabling BENCHMARK SETTINGS")
             node.append_conf('shared_preload_libraries = auto_explain')
             node.append_conf('auto_explain.log_min_duration = 40ms')
@@ -291,10 +285,12 @@ class DatabaseLayer(object):
 
     @classmethod
     def tearDown(cls):
-        cls.connection_pool.closeall()
+        if cls.connection_pool is not None:
+            cls.connection_pool.closeall()
         cls.connection_pool = None
 
-        cls.postgres_node.__exit__(None, None, None)
+        if cls.postgres_node is not None:
+            cls.postgres_node.__exit__(None, None, None)
         cls.postgres_node = None
 
     @classmethod
@@ -305,11 +301,14 @@ class DatabaseLayer(object):
 
     @classmethod
     def testTearDown(cls):
-        cls.connection.rollback() # Make sure we're able to execute
-        cls.cursor.execute('UNLISTEN *')
-        cls.cursor.close()
+        if cls.connection is not None:
+            cls.connection.rollback() # Make sure we're able to execute
+        if cls.cursor is not None:
+            cls.cursor.execute('UNLISTEN *')
+            cls.cursor.close()
         cls.cursor = None
-        cls.connection_pool.putconn(cls.connection)
+        if cls.connection_pool is not None and cls.connection is not None:
+            cls.connection_pool.putconn(cls.connection)
         cls.connection = None
 
     @classmethod
@@ -733,7 +732,6 @@ class DatabaseTestCase(unittest.TestCase):
 
     def assert_row_count_in_query(self, expected_count, query):
         cur = self.layer.cursor
-
         cur.execute('SELECT COUNT(*) FROM ' + query)
         row = cur.fetchone()
         count = row[0]

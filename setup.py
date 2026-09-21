@@ -15,7 +15,7 @@ TESTS_REQUIRE = [
     'Acquisition',
     'zope.testrunner',
     'testgres >= 1.11',
-    'psycopg2-binary; python_implementation != "PyPy"',
+    'psycopg2-binary',
 ]
 
 def _read(fname):
@@ -42,14 +42,12 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
         'Programming Language :: Python :: 3.14',
         'Programming Language :: Python :: 3.15',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Testing',
         'Framework :: Zope3',
     ],
@@ -96,8 +94,7 @@ setup(
             #
             # Or we can attempt a work-around in code. Currently, we're
             # attempting a workaround in code.
-            'psycopg2-binary; python_implementation != "PyPy"',
         ],
     },
-    python_requires=">=3.10",
+    python_requires=">=3.11",
 )
