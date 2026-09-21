@@ -2,7 +2,7 @@
  Changes
 =========
 
-4.6.0 (unreleased)
+4.6.0 (2026-09-21)
 ==================
 
 - Adapt to changes in recent testgres releases. Testgres 1.16.1 is now
