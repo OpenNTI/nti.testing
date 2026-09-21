@@ -44,6 +44,17 @@ jobs:
         python -m pip install -U pip setuptools wheel
         python -m pip install -U coverage
         python -m pip install -U -e ".${{ matrix.extras }}"
+    - name: Install PostgreSQL (mac)
+      run: |
+
+        brew install postgresql@17
+
+        # Homebrew installs PostgreSQL binaries to specific directories based on architecture
+        if [ "$(uname -m)" = "arm64" ]; then
+            echo "/opt/homebrew/opt/postgresql@17/bin" >> $GITHUB_PATH
+        else
+            echo "/usr/local/opt/postgresql@17/bin" >> $GITHUB_PATH
+        fi
     - name: Test
       run: |
         coverage run -m zope.testrunner --test-path=src  --auto-color --auto-progress

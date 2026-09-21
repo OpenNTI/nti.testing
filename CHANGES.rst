@@ -10,7 +10,8 @@
   carefully, but if it stops working on a new testgres release, try
   setting the environment variable
   ``'NTI_TESTING_POSTGRES_SKIP_PLAT_UTIL_FIX'`` before importing this package.
-
+- Running the full unittest suite now requires a working PostgreSQL
+  server installation.
 
 
 4.5.1 (2026-07-15)

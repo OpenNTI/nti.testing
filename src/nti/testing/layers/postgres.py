@@ -28,7 +28,7 @@ from unittest.mock import patch
 
 try:
     from psycopg2 import ProgrammingError
-except ImportError:
+except ImportError: # pragma: no cover
     ThreadedConnectionPool = None
     DictCursor = None
     class IntegrityError(Exception):
@@ -49,6 +49,7 @@ if 'PG_CONFIG' not in os.environ:
     for option in (
         '/opt/local/lib/postgresql11/bin/pg_config',
         '/usr/pgsql-11/bin/pg_config',
+        '/usr/bin/pg_config',
     ):
         if os.path.isfile(option):
             # TODO: Check exec bit
@@ -64,7 +65,7 @@ SAVE_DATABASE_FILENAME = None
 # will be restored from this file on setUp.
 LOAD_DATABASE_ON_SETUP = None
 
-if 'NTI_SAVE_DB' in os.environ:
+if 'NTI_SAVE_DB' in os.environ: # pragma: no cover
     # NTI_SAVE_DB is either 1/on/true (case-insensitive)
     # or a file name.
     val = os.environ['NTI_SAVE_DB']
@@ -76,7 +77,7 @@ if 'NTI_SAVE_DB' in os.environ:
             SAVE_DATABASE_FILENAME = val
 
 
-if 'NTI_LOAD_DB_FILE' in os.environ:
+if 'NTI_LOAD_DB_FILE' in os.environ: # pragma: no cover
     LOAD_DATABASE_ON_SETUP = os.environ['NTI_LOAD_DB_FILE']
 
 # We may patch this in testgres.node, or testgres.utils
@@ -249,7 +250,7 @@ class DatabaseLayer(object):
         node.append_conf('max_connections = 100')
 
         # auto-explain for slow queries
-        if 'benchmark' in ' '.join(sys.argv):
+        if 'benchmark' in ' '.join(sys.argv): # pragma: no cover
             print("Enabling BENCHMARK SETTINGS")
             node.append_conf('shared_preload_libraries = auto_explain')
             node.append_conf('auto_explain.log_min_duration = 40ms')
