@@ -16,6 +16,7 @@ TESTS_REQUIRE = [
     'zope.testrunner',
     'testgres >= 1.11',
     'psycopg2-binary; python_implementation != "PyPy"',
+    'psycopg2; python_implementation == "PyPy"',
 ]
 
 def _read(fname):
@@ -96,7 +97,6 @@ setup(
             #
             # Or we can attempt a work-around in code. Currently, we're
             # attempting a workaround in code.
-            'psycopg2-binary; python_implementation != "PyPy"',
         ],
     },
     python_requires=">=3.10",

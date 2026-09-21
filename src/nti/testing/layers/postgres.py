@@ -26,21 +26,13 @@ from unittest.mock import patch
 #import psycopg2.extras
 #import psycopg2.pool
 
-try:
-    from psycopg2 import ProgrammingError
-except ImportError: # pragma: no cover
-    ThreadedConnectionPool = None
-    DictCursor = None
-    class IntegrityError(Exception):
-        """Never thrown"""
-    ProgrammingError = InternalError = IntegrityError
-else:
-    from psycopg2.pool import ThreadedConnectionPool
-    from psycopg2.extras import DictCursor
-    from psycopg2 import IntegrityError
-    from psycopg2 import InternalError
 
+from psycopg2 import ProgrammingError
 
+from psycopg2.pool import ThreadedConnectionPool
+from psycopg2.extras import DictCursor
+from psycopg2 import IntegrityError
+from psycopg2 import InternalError
 
 
 if 'PG_CONFIG' not in os.environ:
@@ -194,6 +186,7 @@ class DatabaseLayer(object):
         import testgres
         import testgres.node
         import testgres.utils
+
         testgres.configure_testgres()
 
         if hasattr(testgres.node, 'get_pg_version2'):

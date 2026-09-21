@@ -12,6 +12,8 @@
   ``'NTI_TESTING_POSTGRES_SKIP_PLAT_UTIL_FIX'`` before importing this package.
 - Running the full unittest suite now requires a working PostgreSQL
   server installation.
+- The 'testgres' extra no longer installs 'psycopg2-binary'. It is up
+  to you to provide a 'psycopg2' installation if you use the testgres layer.
 
 
 4.5.1 (2026-07-15)
