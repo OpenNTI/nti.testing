@@ -9,6 +9,7 @@ env:
 
 jobs:
   test:
+    name: test (${{ matrix.os }}, py${{ matrix.python-version }})
     strategy:
       matrix:
         python-version:
@@ -19,6 +20,8 @@ jobs:
           - "3.13"
           - "3.14"
           - "3.15-dev"
+        os:
+          - "ubuntu-latest"
         extras:
           - "[test,docs,zodb,test-zodb]"
         include:
@@ -26,7 +29,7 @@ jobs:
             python-version: "3.14"
             extras: "[test,docs,zodb,test-zodb]"
 
-    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v7
@@ -57,6 +60,7 @@ jobs:
         python -m pip uninstall -y ZODB zope.site persistent
         python -m zope.testrunner --test-path=src  --auto-color --auto-progress
     - name: Submit to Coveralls
+      if: matrix.os != 'macos-latest'
       # This is a container action, which only runs on Linux.
       uses: AndreMiras/coveralls-python-action@develop
       with:
