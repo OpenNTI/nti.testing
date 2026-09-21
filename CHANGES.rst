@@ -14,6 +14,9 @@
   server installation.
 - The 'testgres' extra no longer installs 'psycopg2-binary'. It is up
   to you to provide a 'psycopg2' installation if you use the testgres layer.
+- PyPy is no longer officially supported. The 'testgres' layer never
+  worked properly on PyPy.
+- Python 3.10 has reached EOL and is no longer supported.
 
 
 4.5.1 (2026-07-15)
