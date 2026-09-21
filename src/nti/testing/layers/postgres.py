@@ -292,10 +292,12 @@ class DatabaseLayer(object):
 
     @classmethod
     def tearDown(cls):
-        cls.connection_pool.closeall()
+        if cls.connection_pool is not None:
+            cls.connection_pool.closeall()
         cls.connection_pool = None
 
-        cls.postgres_node.__exit__(None, None, None)
+        if cls.postgres_node is not None:
+            cls.postgres_node.__exit__(None, None, None)
         cls.postgres_node = None
 
     @classmethod
@@ -306,11 +308,14 @@ class DatabaseLayer(object):
 
     @classmethod
     def testTearDown(cls):
-        cls.connection.rollback() # Make sure we're able to execute
-        cls.cursor.execute('UNLISTEN *')
-        cls.cursor.close()
+        if cls.connection is not None:
+            cls.connection.rollback() # Make sure we're able to execute
+        if cls.cursor is not None:
+            cls.cursor.execute('UNLISTEN *')
+            cls.cursor.close()
         cls.cursor = None
-        cls.connection_pool.putconn(cls.connection)
+        if cls.connection_pool is not None and cls.connection is not None:
+            cls.connection_pool.putconn(cls.connection)
         cls.connection = None
 
     @classmethod
