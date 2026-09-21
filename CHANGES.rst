@@ -5,7 +5,9 @@
 4.5.2 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Adapt to changes in recent testgres releases. Note that the testgres
+  extra will install 1.14.4 on macOS because more recent versions are
+  currently broken (see `this bug report <https://github.com/postgrespro/testgres/issues/432>`_).
 
 
 4.5.1 (2026-07-15)

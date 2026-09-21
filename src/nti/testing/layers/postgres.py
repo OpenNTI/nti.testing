@@ -38,7 +38,7 @@ else:
     from psycopg2 import IntegrityError
     from psycopg2 import InternalError
 
-import testgres
+
 
 
 if 'PG_CONFIG' not in os.environ:
@@ -77,16 +77,18 @@ if 'NTI_SAVE_DB' in os.environ:
 if 'NTI_LOAD_DB_FILE' in os.environ:
     LOAD_DATABASE_ON_SETUP = os.environ['NTI_LOAD_DB_FILE']
 
+# We may patch this in testgres.node, or testgres.utils
+# so we need to preemptively import the original
+from testgres.utils import get_pg_version2 as _orig_get_pg_version2
+
 
 def patched_get_pg_version(*args, **kwargs):
-    # We patch  this in testgres.node, so its ok to import
-    # the original. In version 1.10, they changed the signature
+    # In version 1.10, they changed the signature
     # of this function, so be sure to accept whatever it does and
     # pass it on. In version 1.11, this was replaced with
     # get_pg_version2, which does the same thing just takes
     # more arguments.
-    from testgres.utils import get_pg_version2
-    from testgres.node import PgVer
+    from testgres.utils import PgVer
     from packaging.version import InvalidVersion
 
     # Some installs of postgres return
@@ -96,7 +98,7 @@ def patched_get_pg_version(*args, **kwargs):
     # "15.3-0+". If it can't be parsed, then return a fake.
 
     try:
-        version = get_pg_version2(*args, **kwargs)
+        version = _orig_get_pg_version2(*args, **kwargs)
         PgVer(version)
     except InvalidVersion:
         print('testgres: Got invalid postgres version', version)
@@ -145,9 +147,18 @@ class DatabaseLayer(object):
 
     @classmethod
     def setUp(cls):
+        import testgres
+        import testgres.node
+        import testgres.utils
         testgres.configure_testgres()
 
-        with patch('testgres.node.get_pg_version2', new=patched_get_pg_version):
+        if hasattr(testgres.node, 'get_pg_version2'):
+            patch_module = testgres.node # pre 1.16.1
+        else:
+            # 1.16.1 invokes as 'import utils; utils.get_pg_version2
+            patch_module = testgres.utils
+
+        with patch.object(patch_module, 'get_pg_version2', new=patched_get_pg_version):
             node = cls.postgres_node = testgres.get_new_node()
 
         # init takes about about 2 -- 3 seconds

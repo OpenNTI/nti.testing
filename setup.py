@@ -84,7 +84,8 @@ setup(
             'furo',
         ] + TESTS_REQUIRE,
         'testgres': [
-            'testgres >= 1.11',
+            'testgres >= 1.11; platform_system != "Darwin"',
+            'testgres == 1.14.4; platform_system == "Darwin"',
             'psycopg2-binary; python_implementation != "PyPy"',
         ],
     },
