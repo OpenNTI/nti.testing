@@ -45,6 +45,7 @@ jobs:
         python -m pip install -U coverage
         python -m pip install -U -e ".${{ matrix.extras }}"
     - name: Install PostgreSQL (mac)
+      if: matrix.os == 'macos-latest'
       run: |
 
         brew install postgresql@17
