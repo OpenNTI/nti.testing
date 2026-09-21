@@ -15,8 +15,7 @@ TESTS_REQUIRE = [
     'Acquisition',
     'zope.testrunner',
     'testgres >= 1.11',
-    'psycopg2-binary; python_implementation != "PyPy"',
-    'psycopg2; python_implementation == "PyPy"',
+    'psycopg2-binary',
 ]
 
 def _read(fname):
